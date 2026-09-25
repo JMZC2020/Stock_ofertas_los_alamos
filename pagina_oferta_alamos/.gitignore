@@ -1,0 +1,25 @@
+# --- Frontend (React/Node) ---
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# --- Backend (Python) ---
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.venv/
+backend/venv/
+
+# --- Variables de entorno (NUNCA subir contraseñas/claves reales) ---
+.env
+backend/.env
+!.env.example
+!backend/.env.example
+
+# --- Sistema operativo / editor ---
+.DS_Store
+.vscode/
+*.log
+
+# --- Docker ---
+docker/db_data/
