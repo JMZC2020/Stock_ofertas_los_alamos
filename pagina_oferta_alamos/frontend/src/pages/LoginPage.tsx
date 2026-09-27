@@ -1,13 +1,50 @@
 import { useState } from "react";
 
+const API_BASE = "http://localhost:8000";
+
 interface Props {
   onLogin: () => void;
   onForgotPassword: () => void;
 }
 
 export default function LoginPage({ onLogin, onForgotPassword }: Props) {
-  const [user, setUser] = useState("");
+  const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async () => {
+    if (!email || !pass) {
+      setError("Ingresa tu correo y contraseña.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/usuarios/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: pass }),
+      });
+
+      if (!res.ok) {
+        const detalle = await res.json().catch(() => null);
+        throw new Error(detalle?.detail ?? "No se pudo iniciar sesión");
+      }
+
+      const data = await res.json();
+      localStorage.setItem("access_token", data.access_token);
+      onLogin();
+    } catch (err: any) {
+      setError(err.message ?? "No se pudo conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleLogin();
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f0f4fc]">
@@ -30,10 +67,16 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
             Iniciar sesión
           </p>
 
-          {/* Username */}
+          {error && (
+            <div className="mb-4 text-sm text-[#c0392b] bg-[#fde8e6] rounded-lg px-4 py-2.5">
+              {error}
+            </div>
+          )}
+
+          {/* Email */}
           <div className="mb-4">
             <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>
-              Usuario
+              Correo electrónico
             </label>
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8891b0]">
@@ -43,9 +86,10 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
                 </svg>
               </span>
               <input
-                type="text"
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#dde2ef] bg-[#f5f7fc] text-[#0d1530] text-sm font-500 focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] transition"
                 style={{ fontWeight: 500 }}
               />
@@ -68,6 +112,7 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
                 type="password"
                 value={pass}
                 onChange={(e) => setPass(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#dde2ef] bg-[#f5f7fc] text-[#0d1530] text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] transition"
               />
             </div>
@@ -75,11 +120,12 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
 
           {/* Login Button */}
           <button
-            onClick={onLogin}
-            className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] active:bg-[#0d1530] text-white font-700 text-sm tracking-wide transition-all shadow-md hover:shadow-lg"
+            onClick={handleLogin}
+            disabled={loading}
+            className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] active:bg-[#0d1530] text-white font-700 text-sm tracking-wide transition-all shadow-md hover:shadow-lg disabled:opacity-50"
             style={{ fontWeight: 700 }}
           >
-            Iniciar sesión
+            {loading ? "Ingresando..." : "Iniciar sesión"}
           </button>
 
           {/* Forgot password */}

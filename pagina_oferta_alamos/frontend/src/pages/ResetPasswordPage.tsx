@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const API_BASE = "http://localhost:8000";
+
 interface Props {
   onBack: () => void;
 }
@@ -9,6 +11,75 @@ export default function ResetPasswordPage({ onBack }: Props) {
   const [email, setEmail] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+  const [resetToken, setResetToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleSolicitar = async () => {
+    if (!email) {
+      setError("Ingresa tu correo electrónico.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/usuarios/reset-password/solicitar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) throw new Error("No se pudo procesar la solicitud");
+
+      const data = await res.json();
+      // ⚠️ Modo desarrollo: como aún no hay envío de correo real (SMTP),
+      // el token llega directo en la respuesta en vez de por email.
+      setResetToken(data.token_desarrollo ?? null);
+      setStep(2);
+    } catch (err: any) {
+      setError(err.message ?? "No se pudo conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleActualizar = async () => {
+    if (!newPass || !confirmPass) {
+      setError("Completa ambos campos de contraseña.");
+      return;
+    }
+    if (newPass !== confirmPass) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+    if (newPass.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres.");
+      return;
+    }
+    if (!resetToken) {
+      setError("No se encontró un token de recuperación válido. Vuelve a solicitarlo.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/usuarios/reset-password/confirmar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: resetToken, nueva_password: newPass }),
+      });
+      if (!res.ok) {
+        const detalle = await res.json().catch(() => null);
+        throw new Error(detalle?.detail ?? "No se pudo actualizar la contraseña");
+      }
+      setSuccess(true);
+      setTimeout(() => onBack(), 1500);
+    } catch (err: any) {
+      setError(err.message ?? "No se pudo conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f0f4fc]">
@@ -23,9 +94,7 @@ export default function ResetPasswordPage({ onBack }: Props) {
               <path d="M19 12H5M11 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className="flex items-center gap-2">
-            <span className="font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Restablecer Contraseña</span>
-          </div>
+          <span className="font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Restablecer Contraseña</span>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg border border-[#dde2ef] p-8">
@@ -39,6 +108,18 @@ export default function ResetPasswordPage({ onBack }: Props) {
               2
             </div>
           </div>
+
+          {error && (
+            <div className="mb-4 text-sm text-[#c0392b] bg-[#fde8e6] rounded-lg px-4 py-2.5">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-4 text-sm text-[#1a7a4a] bg-[#e8f8ef] rounded-lg px-4 py-2.5">
+              Contraseña actualizada correctamente. Volviendo al inicio de sesión...
+            </div>
+          )}
 
           {step === 1 ? (
             <>
@@ -63,17 +144,24 @@ export default function ResetPasswordPage({ onBack }: Props) {
               </p>
 
               <button
-                onClick={() => setStep(2)}
-                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white font-700 text-sm tracking-wide transition-all shadow-md"
+                onClick={handleSolicitar}
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white font-700 text-sm tracking-wide transition-all shadow-md disabled:opacity-50"
                 style={{ fontWeight: 700 }}
               >
-                Restablecer Contraseña
+                {loading ? "Enviando..." : "Restablecer Contraseña"}
               </button>
             </>
           ) : (
             <>
               <h2 className="text-lg font-700 text-[#0d1530] mb-1" style={{ fontWeight: 700 }}>Nueva contraseña</h2>
               <p className="text-sm text-[#8891b0] mb-6">Ingrese y confirme su nueva contraseña.</p>
+
+              {resetToken && (
+                <p className="text-xs text-[#8891b0] bg-[#fdf3e3] rounded-lg px-4 py-3 mb-4 leading-relaxed">
+                  Modo desarrollo: aún no hay envío de correo real configurado, así que el enlace se validó automáticamente en esta sesión.
+                </p>
+              )}
 
               <div className="mb-4">
                 <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>
@@ -102,11 +190,12 @@ export default function ResetPasswordPage({ onBack }: Props) {
               </div>
 
               <button
-                onClick={onBack}
-                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white font-700 text-sm tracking-wide transition-all shadow-md"
+                onClick={handleActualizar}
+                disabled={loading || success}
+                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white font-700 text-sm tracking-wide transition-all shadow-md disabled:opacity-50"
                 style={{ fontWeight: 700 }}
               >
-                Actualizar Contraseña
+                {loading ? "Actualizando..." : "Actualizar Contraseña"}
               </button>
             </>
           )}

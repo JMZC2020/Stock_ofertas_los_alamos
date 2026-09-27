@@ -9,6 +9,22 @@ app = FastAPI(title="Stock Oferta de los Álamos - API")
 
 Base.metadata.create_all(bind=engine)
 
+#productos
+from app.routers import productos
+app.include_router(productos.router, prefix="/productos", tags=["Productos"])
+
+
+#proovedores
+from app.routers import proveedores
+app.include_router(proveedores.router, prefix="/proveedores", tags=["Proveedores"])
+
+
+#usuario-cambiar de contraseña
+from app.routers import usuarios
+app.include_router(usuarios.router, prefix="/usuarios", tags=["Usuarios"])
+
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.FRONTEND_ORIGIN],
