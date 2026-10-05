@@ -93,6 +93,7 @@ export default function ProductosPage() {
   const [modal, setModal] = useState<ModalMode>(null);
   const [selected, setSelected] = useState<Product | null>(null);
   const [form, setForm] = useState<Partial<Product>>({});
+  const [importando, setImportando] = useState(false);
 
   const cargarProductos = async () => {
     setLoading(true);
@@ -194,6 +195,46 @@ export default function ProductosPage() {
     }
   };
 
+  const handleImportarExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const archivo = e.target.files?.[0];
+    e.target.value = "";
+    if (!archivo) return;
+
+    setImportando(true);
+    try {
+      const formData = new FormData();
+      formData.append("archivo", archivo);
+
+      const res = await fetch(`${API_BASE}/productos/importar-excel`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const detalle = await res.json().catch(() => null);
+        throw new Error(detalle?.detail ?? `Error ${res.status} al importar`);
+      }
+
+      const resumen = await res.json();
+      const mensaje = [
+        `Filas procesadas: ${resumen.filas_procesadas}`,
+        `Productos importados: ${resumen.productos_importados}`,
+        `Omitidos (duplicados): ${resumen.productos_omitidos}`,
+        resumen.errores.length > 0
+          ? `\nDetalle (${resumen.errores.length}):\n` + resumen.errores.slice(0, 10).join("\n") +
+            (resumen.errores.length > 10 ? `\n... y ${resumen.errores.length - 10} más` : "")
+          : "",
+      ].join("\n");
+      alert(mensaje);
+
+      await cargarProductos();
+    } catch (err: any) {
+      alert(err.message ?? "No se pudo importar el archivo");
+    } finally {
+      setImportando(false);
+    }
+  };
+
   const handleDelete = async (p: Product) => {
     if (!confirm(`¿Eliminar "${p.nombre}"? Si tiene ventas asociadas, se desactivará en vez de borrarse.`)) return;
     try {
@@ -216,16 +257,22 @@ export default function ProductosPage() {
             {loading ? "Cargando..." : `${filtered.length} productos encontrados`}
           </p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm font-600 shadow transition"
-          style={{ fontWeight: 600 }}
-        >
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path d="M12 5v14M5 12h14" strokeLinecap="round" />
-          </svg>
-          Agregar producto
-        </button>
+        <div className="flex gap-2">
+          <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#4a5580] border border-[#dde2ef] hover:border-[#3554a5] text-sm font-600 transition cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
+            {importando ? "Importando..." : "Importar Excel (POS)"}
+            <input type="file" accept=".xlsx,.xls" onChange={handleImportarExcel} disabled={importando} className="hidden" />
+          </label>
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm font-600 shadow transition"
+            style={{ fontWeight: 600 }}
+          >
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+            </svg>
+            Agregar producto
+          </button>
+        </div>
       </div>
 
       {error && (

@@ -24,6 +24,10 @@ from app.routers import usuarios
 app.include_router(usuarios.router, prefix="/usuarios", tags=["Usuarios"])
 
 
+#Ventas
+from app.routers import ventas
+app.include_router(ventas.router, prefix="/ventas", tags=["Ventas"])
+
 
 app.add_middleware(
     CORSMiddleware,

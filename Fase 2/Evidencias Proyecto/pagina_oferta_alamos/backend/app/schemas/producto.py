@@ -49,3 +49,11 @@ class ProductoOut(ProductoBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
     proveedor: Optional[ProveedorOut] = None
+
+
+class ProductoImportResumen(BaseModel):
+    """Respuesta al importar productos desde el Excel del POS (TUU)."""
+    filas_procesadas: int
+    productos_importados: int
+    productos_omitidos: int
+    errores: list[str] = []
