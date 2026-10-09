@@ -159,7 +159,7 @@ export default function VentasPage() {
     }
   };
 
-  const handleImportarCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportarExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0];
     e.target.value = ""; // permite volver a elegir el mismo archivo después
     if (!archivo) return;
@@ -169,7 +169,7 @@ export default function VentasPage() {
       const formData = new FormData();
       formData.append("archivo", archivo);
 
-      const res = await fetch(`${API_BASE}/ventas/importar-csv`, {
+      const res = await fetch(`${API_BASE}/ventas/importar-excel`, {
         method: "POST",
         body: formData,
       });
@@ -231,8 +231,8 @@ export default function VentasPage() {
             + Nueva venta
           </button>
           <label className={`px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#4a5580] border border-[#dde2ef] hover:border-[#3554a5] cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
-            {importando ? "Importando..." : "Importar CSV"}
-            <input type="file" accept=".csv" onChange={handleImportarCSV} disabled={importando} className="hidden" />
+            {importando ? "Importando..." : "Importar Excel"}
+            <input type="file" accept=".xlsx,.xls" onChange={handleImportarExcel} disabled={importando} className="hidden" />
           </label>
         </div>
       </div>

@@ -119,8 +119,12 @@ def importar_productos_excel(archivo: UploadFile = File(...), db: Session = Depe
     - No hay datos de proveedor en este archivo -> proveedor_id queda en None para todos.
     - Hay códigos (CODIGO) duplicados en el archivo -> se importa solo la primera
       aparición de cada código, el resto se reporta como omitido.
+    - CODIGO se guarda en el nuevo campo `codigo_barra`, que se usa para emparejar
+      ventas con productos de forma más confiable que por nombre.
     - Si ya existe un producto con el mismo nombre (de una importación anterior),
-      se omite para no duplicarlo -> este endpoint se puede correr más de una vez sin riesgo.
+      NO se duplica: si a ese producto le faltaba `codigo_barra`, se le rellena con
+      el de esta fila. Por eso este endpoint se puede correr más de una vez sin
+      riesgo, y sirve para completar el código de barra de productos ya cargados.
     """
     try:
         df = pd.read_excel(archivo.file, header=3, dtype=str)
@@ -141,7 +145,7 @@ def importar_productos_excel(archivo: UploadFile = File(...), db: Session = Depe
 
     df = df[df["DESCRIPCION"].notna() & (df["DESCRIPCION"] != "")]
 
-    nombres_existentes = {fila[0].lower() for fila in db.query(Producto.nombre).all()}
+    productos_por_nombre = {p.nombre.lower(): p for p in db.query(Producto).all()}
     codigos_vistos: set[str] = set()
 
     errores: list[str] = []
@@ -160,7 +164,12 @@ def importar_productos_excel(archivo: UploadFile = File(...), db: Session = Depe
                 productos_omitidos += 1
                 continue
 
-            if nombre.lower() in nombres_existentes:
+            existente = productos_por_nombre.get(nombre.lower())
+            if existente:
+                if codigo and not existente.codigo_barra:
+                    existente.codigo_barra = codigo
+                if codigo:
+                    codigos_vistos.add(codigo)
                 productos_omitidos += 1
                 continue
 
@@ -172,6 +181,7 @@ def importar_productos_excel(archivo: UploadFile = File(...), db: Session = Depe
 
             nuevo = Producto(
                 nombre=nombre,
+                codigo_barra=codigo or None,
                 categoria=categoria,
                 precio_compra=precio_compra,
                 precio_venta=precio_venta,
@@ -183,7 +193,7 @@ def importar_productos_excel(archivo: UploadFile = File(...), db: Session = Depe
 
             if codigo:
                 codigos_vistos.add(codigo)
-            nombres_existentes.add(nombre.lower())
+            productos_por_nombre[nombre.lower()] = nuevo
             productos_importados += 1
 
         except Exception as e:
