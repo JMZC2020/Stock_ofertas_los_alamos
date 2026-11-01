@@ -7,18 +7,26 @@ type Screen = "login" | "reset-password" | "app";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("login");
+  const [resetToken, setResetToken] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("reset_token");
+  });
 
-  if (screen === "login") {
+  if (resetToken || screen === "reset-password") {
     return (
-      <LoginPage
-        onLogin={() => setScreen("app")}
-        onForgotPassword={() => setScreen("reset-password")}
+      <ResetPasswordPage
+        initialToken={resetToken}
+        onBack={() => {
+          // Limpia el parámetro de la URL sin recargar la página
+          if (window.history.replaceState) {
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+          }
+          setResetToken(null);
+          setScreen("login");
+        }}
       />
     );
-  }
-
-  if (screen === "reset-password") {
-    return <ResetPasswordPage onBack={() => setScreen("login")} />;
   }
 
   return <DashboardLayout onLogout={() => setScreen("login")} />;

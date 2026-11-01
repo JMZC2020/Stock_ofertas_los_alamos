@@ -29,6 +29,16 @@ from app.routers import ventas
 app.include_router(ventas.router, prefix="/ventas", tags=["Ventas"])
 
 
+#alertas
+from app.routers import alertas
+app.include_router(alertas.router, prefix="/alertas", tags=["Alertas"])
+
+
+#dashboards
+from app.routers import dashboard
+app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.FRONTEND_ORIGIN],

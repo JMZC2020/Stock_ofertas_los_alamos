@@ -10,6 +10,7 @@ class Producto(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(200), nullable=False, index=True)
+    codigo_barra = Column(String(50), nullable=True, index=True)  # viene del POS (CODIGO / COD. BARRA)
     categoria = Column(String(100), nullable=False, index=True)
     precio_compra = Column(Numeric(10, 2), nullable=False)
     precio_venta = Column(Numeric(10, 2), nullable=False)

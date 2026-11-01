@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import hash_password, verify_password, create_access_token
 from app.models.usuario import Usuario
+from app.services.email import enviar_correo_recuperacion
 from app.schemas.usuario import (
     UsuarioCreate,
     UsuarioOut,
@@ -61,23 +62,27 @@ def login(datos: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/reset-password/solicitar")
 def solicitar_reset(datos: PasswordResetRequest, db: Session = Depends(get_db)):
-    """HU-31 (paso 1): genera un token de recuperación de contraseña."""
+    """HU-31 (paso 1): genera un token de recuperación y envía el enlace por correo (SMTP)."""
     usuario = db.query(Usuario).filter(Usuario.email == datos.email).first()
 
     if not usuario:
-        return {"mensaje": "Si el correo existe, se enviará un enlace de recuperación."}
+        # Por seguridad y feedback claro, se entrega confirmación sin revelar si el correo existe
+        return {"mensaje": "Si el correo está registrado, se enviará un enlace de recuperación."}
 
     token = secrets.token_urlsafe(32)
     usuario.reset_token = token
     usuario.reset_token_expira = datetime.utcnow() + timedelta(hours=1)
     db.commit()
 
-    # ⚠️ PENDIENTE: enviar este token por correo real (requiere configurar
-    # un servicio SMTP). Mientras tanto, se devuelve aquí mismo SOLO para
-    # poder probar el flujo completo durante el desarrollo.
+    # Enviar correo con plantilla corporativa y enlace directo al frontend
+    enviar_correo_recuperacion(
+        email_destinatario=usuario.email,
+        nombre_destinatario=usuario.nombre,
+        token=token,
+    )
+
     return {
-        "mensaje": "Si el correo existe, se enviará un enlace de recuperación.",
-        "token_desarrollo": token,
+        "mensaje": "Si el correo está registrado, se enviará un enlace de recuperación.",
     }
 
 
