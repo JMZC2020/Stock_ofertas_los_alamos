@@ -16,6 +16,4 @@ class Proveedor(Base):
     telefono = Column(String(30), nullable=True)
     activo = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    # Un proveedor puede tener muchos productos asociados
     productos = relationship("Producto", back_populates="proveedor")

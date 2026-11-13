@@ -5,13 +5,14 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.database import get_db
+from app.core.deps import get_current_user
 from app.models.producto import Producto
 from app.models.venta import Venta
 from app.schemas.dashboard import (
     DashboardKpis, DashboardOut, MetodoPago, TopProducto, VentaDia,
 )
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 DIAS_VENTANA = 30
 
@@ -25,8 +26,8 @@ def obtener_dashboard(db: Session = Depends(get_db)):
     inicio_mes = hoy.replace(day=1)
     desde = min(inicio_ventana, inicio_mes)
 
-    # --- Inventario (KPIs de productos) ---
-    productos = db.query(Producto).filter(Producto.activo == True).all()  # noqa: E712
+    
+    productos = db.query(Producto).filter(Producto.activo == True).all()  
     stock_critico = sum(1 for p in productos if p.stock_actual <= p.stock_minimo)
     sin_stock = sum(1 for p in productos if p.stock_actual <= 0)
     por_vencer = vencidos = 0
@@ -40,11 +41,11 @@ def obtener_dashboard(db: Session = Depends(get_db)):
         elif dias <= p.dias_alerta_vencimiento:
             por_vencer += 1
 
-    # --- Ventas (una sola consulta; se agrega en Python) ---
+    
     ventas = (
         db.query(Venta)
         .options(joinedload(Venta.producto))
-        .filter(Venta.anulada == False)  # noqa: E712
+        .filter(Venta.anulada == False)  
         .filter(Venta.fecha >= datetime.combine(desde, datetime.min.time()))
         .all()
     )
@@ -56,8 +57,7 @@ def obtener_dashboard(db: Session = Depends(get_db)):
     por_metodo: dict[str, float] = defaultdict(float)
 
     for v in ventas:
-        # Se usa la fecha tal como quedó guardada: el cierre de caja trae un día completo
-        # y convertir de zona horaria podría correrlo al día anterior.
+        
         dia = v.fecha.date()
         total = float(v.total)
 
@@ -73,14 +73,14 @@ def obtener_dashboard(db: Session = Depends(get_db)):
             acc["total"] += total
             por_metodo[(v.metodo_pago or "Sin dato").strip() or "Sin dato"] += total
 
-    # Serie diaria completa (rellena con 0 los días sin ventas)
+    
     serie = [
         VentaDia(fecha=(inicio_ventana + timedelta(days=i)).isoformat(),
                  total=round(por_dia.get(inicio_ventana + timedelta(days=i), 0.0), 2))
         for i in range(DIAS_VENTANA)
     ]
 
-    # Variación: últimos 7 días vs los 7 anteriores
+    
     ult7 = sum(s.total for s in serie[-7:])
     ant7 = sum(s.total for s in serie[-14:-7])
     variacion = round((ult7 - ant7) / ant7 * 100, 1) if ant7 > 0 else None

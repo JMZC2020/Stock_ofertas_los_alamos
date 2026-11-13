@@ -10,6 +10,15 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     FRONTEND_ORIGIN: str = "http://localhost:5173"
 
+
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587          
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = ""          
+    SMTP_STARTTLS: bool = True    
+    RESET_TOKEN_MINUTES: int = 60
+
     class Config:
         env_file = ".env"
 

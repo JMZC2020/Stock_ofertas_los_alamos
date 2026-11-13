@@ -7,11 +7,12 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.deps import get_current_user
 from app.models.producto import Producto
 from app.models.venta import Venta
 from app.schemas.venta import VentaCreate, VentaOut, VentaCSVResumen
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.post("/", response_model=VentaOut, status_code=status.HTTP_201_CREATED)
@@ -73,7 +74,7 @@ def listar_ventas(
     query = db.query(Venta)
 
     if solo_vigentes:
-        query = query.filter(Venta.anulada == False)  # noqa: E712
+        query = query.filter(Venta.anulada == False)  
     if producto_id:
         query = query.filter(Venta.producto_id == producto_id)
     if fecha_desde:
@@ -121,6 +122,54 @@ def anular_venta(venta_id: int, db: Session = Depends(get_db)):
     return venta
 
 
+@router.delete("/{venta_id}")
+def eliminar_venta(venta_id: int, db: Session = Depends(get_db)):
+    """Eliminar una venta de forma DEFINITIVA (a diferencia de anular, no deja registro).
+
+    - Si la venta estaba vigente, se restituye el stock del producto (igual que al anular).
+    - Si ya estaba anulada, el stock ya fue restituido antes, así que no se toca.
+    """
+    venta = db.query(Venta).filter(Venta.id == venta_id).first()
+    if not venta:
+        raise HTTPException(status_code=404, detail="Venta no encontrada")
+
+    if not venta.anulada:
+        producto = db.query(Producto).filter(Producto.id == venta.producto_id).first()
+        if producto:
+            producto.stock_actual += venta.cantidad
+
+    db.delete(venta)
+    db.commit()
+    return {"mensaje": "Venta eliminada correctamente"}
+
+
+@router.delete("/")
+def limpiar_ventas(db: Session = Depends(get_db)):
+    """Limpiar el historial: elimina TODAS las ventas de forma definitiva.
+
+    El stock de los productos queda como si esas ventas nunca hubieran ocurrido:
+    se restituye la cantidad de cada venta vigente (las anuladas ya la habían restituido).
+    """
+    ventas = db.query(Venta).all()
+    total = len(ventas)
+    restituidas = 0
+
+    for venta in ventas:
+        if not venta.anulada:
+            producto = db.query(Producto).filter(Producto.id == venta.producto_id).first()
+            if producto:
+                producto.stock_actual += venta.cantidad
+                restituidas += 1
+        db.delete(venta)
+
+    db.commit()
+    return {
+        "eliminadas": total,
+        "stock_restituido_en": restituidas,
+        "mensaje": f"Se eliminaron {total} venta(s) y se restituyó el stock de {restituidas}.",
+    }
+
+
 def _buscar_fecha_cierre(vista: pd.DataFrame) -> Optional[str]:
     """El 'cierre de caja' trae UNA fecha para todo el archivo (es el cierre de
     un día), escrita en una celda tipo 'FECHA' seguida del valor al lado,
@@ -148,7 +197,7 @@ def _detectar_fila_encabezado(vista: pd.DataFrame, columnas_esperadas: set[str])
 
 @router.post("/importar-excel", response_model=VentaCSVResumen)
 def importar_ventas_excel(archivo: UploadFile = File(...), db: Session = Depends(get_db)):
-    """HU-07: Importar ventas desde el 'Cierre de Caja' exportado por el POS TUU.
+    """Importar ventas desde el 'Cierre de Caja' exportado por el POS TUU.
 
     Este archivo es un reporte de UN SOLO DÍA (no trae fecha por fila), con
     varios bloques de resumen antes de la tabla de detalle real, que aparece
@@ -177,6 +226,11 @@ def importar_ventas_excel(archivo: UploadFile = File(...), db: Session = Depends
     - VAL.UN. y TOTAL se usan tal cual vienen en el archivo (son el precio
       real al que se vendió ese día), no se recalculan con el precio actual
       del catálogo.
+    - Cada línea guarda el número de boleta (columna NRO.) en el campo
+      `folio`. Si ese mismo folio + producto ya existe en la base, la línea
+      se omite (se reporta como "duplicada") en vez de crear una venta
+      repetida. Así el mismo archivo se puede volver a subir sin miedo
+      a duplicar ventas por error.
     """
     contenido = archivo.file.read()
 
@@ -222,14 +276,21 @@ def importar_ventas_excel(archivo: UploadFile = File(...), db: Session = Depends
 
     columnas_fpago = [c for c in df.columns if c == "F.PAGO" or c.startswith("F.PAGO.")]
 
+    
+    folios_existentes = {
+        (f, pid) for f, pid in db.query(Venta.folio, Venta.producto_id).filter(Venta.folio.isnot(None)).all()
+    }
+
     errores: list[str] = []
     ventas_importadas = 0
+    ventas_duplicadas = 0
     ventas_con_stock_negativo = 0
 
     for idx, fila in df.iterrows():
         num_fila = idx + fila_encabezado + 2
 
         try:
+            folio = str(fila.get("NRO.") or "").strip() or None
             codigo = str(fila.get("CODIGO") or "").strip()
             nombre = str(fila["DESCRIPCION"]).strip()
             cantidad = int(float(fila["CANT"]))
@@ -257,6 +318,10 @@ def importar_ventas_excel(archivo: UploadFile = File(...), db: Session = Depends
                 errores.append(f"Fila {num_fila}: producto '{nombre}' (código '{codigo}') no encontrado en el catálogo")
                 continue
 
+            if folio and (folio, producto.id) in folios_existentes:
+                ventas_duplicadas += 1
+                continue
+
             nueva_venta = Venta(
                 producto_id=producto.id,
                 cantidad=cantidad,
@@ -265,6 +330,7 @@ def importar_ventas_excel(archivo: UploadFile = File(...), db: Session = Depends
                 fecha=fecha_cierre,
                 metodo_pago=metodo_pago,
                 origen="excel",
+                folio=folio,
                 anulada=False,
             )
             producto.stock_actual -= cantidad
@@ -272,6 +338,8 @@ def importar_ventas_excel(archivo: UploadFile = File(...), db: Session = Depends
                 ventas_con_stock_negativo += 1
 
             db.add(nueva_venta)
+            if folio:
+                folios_existentes.add((folio, producto.id))
             ventas_importadas += 1
 
         except Exception as e:
@@ -285,8 +353,12 @@ def importar_ventas_excel(archivo: UploadFile = File(...), db: Session = Depends
             f"(reflejan el mismo problema de inventario detectado en el catálogo del cliente)."
         )
 
+    if ventas_duplicadas:
+        errores.append(f"{ventas_duplicadas} línea(s) ya habían sido importadas antes (mismo folio y producto), se omitieron.")
+
     return VentaCSVResumen(
         filas_procesadas=len(df),
         ventas_importadas=ventas_importadas,
+        ventas_duplicadas=ventas_duplicadas,
         errores=errores,
     )

@@ -1,107 +1,295 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-// Datos de ejemplo de Figma removidos — se conectarán a la API real más adelante
-const CATEGORIAS: { id: number; nombre: string; productos: number; descripcion: string; color: string }[] = [];
+const API_BASE = "http://localhost:8000";
+
+type Clase = "A" | "B" | "C";
+
+interface ProductoABC {
+  posicion: number;
+  producto_id: number;
+  nombre: string;
+  categoria: string;
+  unidades: number;
+  ingresos: number;
+  porcentaje: number;
+  porcentaje_acumulado: number;
+  clase: Clase;
+}
+interface ResumenClase {
+  clase: Clase;
+  productos: number;
+  ingresos: number;
+  porcentaje_ingresos: number;
+  porcentaje_productos: number;
+}
+interface Clasificacion {
+  parametros: { umbral_a: number; umbral_b: number; dias: number };
+  total_ingresos: number;
+  total_productos: number;
+  resumen: ResumenClase[];
+  productos: ProductoABC[];
+}
+
+
+const ESTILO: Record<Clase, { barra: string; badge: string; titulo: string; descripcion: string }> = {
+  A: { barra: "#1e2d5a", badge: "bg-[#1e2d5a] text-white", titulo: "Productos estrella", descripcion: "Los que más venden. Que nunca falten en el almacén." },
+  B: { barra: "#3554a5", badge: "bg-[#3554a5] text-white", titulo: "Productos importantes", descripcion: "Venden bien. Mantén stock suficiente." },
+  C: { barra: "#9aa8d0", badge: "bg-[#dde2ef] text-[#1e2d5a]", titulo: "Productos de apoyo", descripcion: "Venden poco o nada. Revisa si conviene seguir comprándolos." },
+};
+
+
+const NIVELES = [
+  { id: "estandar", label: "Estándar (recomendado)", a: 80, b: 95, ayuda: "Lo habitual: los productos estrella son los que generan el 80 % de las ventas." },
+  { id: "estricto", label: "Estricto: menos productos estrella", a: 70, b: 90, ayuda: "Solo los que más aportan quedan como estrella (70 % de las ventas)." },
+  { id: "amplio", label: "Amplio: más productos estrella", a: 90, b: 98, ayuda: "Más productos entran como estrella (90 % de las ventas)." },
+  { id: "personalizado", label: "Personalizado", a: 80, b: 95, ayuda: "Tú eliges los porcentajes." },
+] as const;
+type NivelId = (typeof NIVELES)[number]["id"];
+
+const PERIODOS = [
+  { dias: 30, label: "Últimos 30 días" },
+  { dias: 90, label: "Últimos 90 días" },
+  { dias: 180, label: "Últimos 6 meses" },
+  { dias: 365, label: "Último año" },
+  { dias: 0, label: "Todo el historial" },
+];
+
+const pesos = (n: number) => `$${Math.round(n).toLocaleString("es-CL")}`;
 
 export default function ClasificacionPage() {
-  const [modal, setModal] = useState(false);
-  const [editItem, setEditItem] = useState<typeof CATEGORIAS[0] | null>(null);
+  const [datos, setDatos] = useState<Clasificacion | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const openEdit = (c: typeof CATEGORIAS[0]) => {
-    setEditItem(c);
-    setModal(true);
+  
+  const [nivel, setNivel] = useState<NivelId>("estandar");
+  const [umbralA, setUmbralA] = useState("80");
+  const [umbralB, setUmbralB] = useState("95");
+  const [dias, setDias] = useState(90);
+  const [filtroClase, setFiltroClase] = useState<"todas" | Clase>("todas");
+  const [errorForm, setErrorForm] = useState<string | null>(null);
+
+  const cargar = async (a: string, b: string, d: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/clasificacion/?umbral_a=${a}&umbral_b=${b}&dias=${d}`);
+      if (!res.ok) {
+        const detalle = await res.json().catch(() => null);
+        throw new Error(typeof detalle?.detail === "string" ? detalle.detail : `Error ${res.status} al cargar la clasificación`);
+      }
+      setDatos(await res.json());
+    } catch (err: any) {
+      setError(err.message ?? "No se pudo conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    cargar("80", "95", 90);
+  }, []);
+
+  const cambiarNivel = (id: NivelId) => {
+    setNivel(id);
+    setErrorForm(null);
+    if (id === "personalizado") return; 
+    const n = NIVELES.find((x) => x.id === id)!;
+    setUmbralA(String(n.a));
+    setUmbralB(String(n.b));
+    cargar(String(n.a), String(n.b), dias);
+  };
+
+  const cambiarPeriodo = (d: number) => {
+    setDias(d);
+    cargar(umbralA, umbralB, d);
+  };
+
+  const aplicarPersonalizado = () => {
+    const a = Number(umbralA);
+    const b = Number(umbralB);
+    if (!Number.isFinite(a) || !Number.isFinite(b) || a <= 0 || b > 100 || a >= b) {
+      setErrorForm("El porcentaje de los productos estrella debe ser menor que el de los importantes, y ninguno puede pasar de 100 (ejemplo: 80 y 95).");
+      return;
+    }
+    setErrorForm(null);
+    cargar(String(a), String(b), dias);
+  };
+
+  const productos = datos?.productos ?? [];
+  const visibles = filtroClase === "todas" ? productos : productos.filter((p) => p.clase === filtroClase);
+  const sinVentas = productos.filter((p) => p.ingresos === 0).length;
+  const sinDatos = !loading && datos !== null && datos.total_ingresos === 0;
 
   return (
     <div className="p-6 space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Clasificación</h1>
-          <p className="text-sm text-[#8891b0] mt-0.5">Administre las categorías de productos</p>
-        </div>
-        <button onClick={() => { setEditItem(null); setModal(true); }} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm font-600 shadow transition" style={{ fontWeight: 600 }}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" strokeLinecap="round" /></svg>
-          Nueva categoría
-        </button>
+      <div>
+        <h1 className="text-xl font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Clasificación ABC</h1>
+        <p className="text-sm text-[#8891b0] mt-0.5">
+          Descubre qué productos sostienen tu negocio y cuáles venden poco.
+        </p>
       </div>
 
-      {/* Stats bar */}
+      {/* Parámetros */}
       <div className="bg-white rounded-xl p-5 border border-[#dde2ef] shadow-sm">
-        <p className="text-xs font-500 text-[#8891b0] uppercase tracking-wider mb-3" style={{ fontWeight: 500 }}>Distribución de productos por categoría</p>
-        <div className="flex h-6 rounded-full overflow-hidden gap-px">
-          {CATEGORIAS.map((c) => {
-            const total = CATEGORIAS.reduce((s, x) => s + x.productos, 0);
-            const pct = (c.productos / total) * 100;
-            return (
-              <div key={c.id} style={{ width: `${pct}%`, background: c.color }} title={`${c.nombre}: ${c.productos}`} />
-            );
-          })}
+        <div className="flex flex-wrap items-end gap-4">
+          <div>
+            <label className="block text-xs text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>¿Qué tan exigente quieres ser?</label>
+            <select value={nivel} onChange={(e) => cambiarNivel(e.target.value as NivelId)} disabled={loading}
+              className="px-3 py-2 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] cursor-pointer">
+              {NIVELES.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Ventas de qué período</label>
+            <select value={dias} onChange={(e) => cambiarPeriodo(Number(e.target.value))} disabled={loading}
+              className="px-3 py-2 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] cursor-pointer">
+              {PERIODOS.map((p) => <option key={p.dias} value={p.dias}>{p.label}</option>)}
+            </select>
+          </div>
+          {loading && <span className="text-xs text-[#8891b0] pb-2.5">Calculando...</span>}
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
-          {CATEGORIAS.map((c) => (
-            <div key={c.id} className="flex items-center gap-1.5 text-xs text-[#4a5580]">
-              <span className="w-2.5 h-2.5 rounded-sm" style={{ background: c.color }} />
-              {c.nombre}
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Categories grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {CATEGORIAS.length === 0 && (
-          <p className="text-sm text-[#8891b0] col-span-full py-6 text-center">Aún no hay categorías registradas.</p>
+        <p className="text-xs text-[#8891b0] mt-3">{NIVELES.find((n) => n.id === nivel)?.ayuda}</p>
+
+        {nivel === "personalizado" && (
+          <div className="mt-4 pt-4 border-t border-[#eef1f8] flex flex-wrap items-end gap-4">
+            <div>
+              <label className="block text-xs text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Los productos estrella (A) suman hasta el… % de las ventas</label>
+              <input type="number" min={1} max={99} value={umbralA} onChange={(e) => setUmbralA(e.target.value)}
+                className="w-28 px-3 py-2 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+            </div>
+            <div>
+              <label className="block text-xs text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Con los importantes (B) llegan hasta el… %</label>
+              <input type="number" min={2} max={100} value={umbralB} onChange={(e) => setUmbralB(e.target.value)}
+                className="w-28 px-3 py-2 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+            </div>
+            <button onClick={aplicarPersonalizado} disabled={loading}
+              className="px-4 py-2.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm shadow transition disabled:opacity-50" style={{ fontWeight: 600 }}>
+              Aplicar
+            </button>
+            <p className="text-xs text-[#8891b0] w-full">Ejemplo: 80 y 95 significa que A cubre el 80 % de las ventas, B el siguiente 15 % y C el 5 % restante.</p>
+          </div>
         )}
-        {CATEGORIAS.map((c) => (
-          <div key={c.id} className="bg-white rounded-xl border border-[#dde2ef] shadow-sm p-5 hover:border-[#3554a5]/30 hover:shadow-md transition-all">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-700" style={{ background: c.color, fontWeight: 700 }}>
-                {c.nombre.slice(0, 2)}
-              </div>
-              <div>
-                <p className="font-600 text-[#0d1530] text-sm" style={{ fontWeight: 600 }}>{c.nombre}</p>
-                <p className="text-xs text-[#8891b0]">{c.productos} productos</p>
-              </div>
-            </div>
-            <p className="text-xs text-[#4a5580] leading-relaxed mb-4">{c.descripcion}</p>
-            <div className="flex gap-2">
-              <button onClick={() => openEdit(c)} className="flex-1 py-2 rounded-lg text-xs font-600 border border-[#dde2ef] text-[#4a5580] hover:text-[#1e2d5a] hover:border-[#1e2d5a] transition" style={{ fontWeight: 600 }}>
-                Editar
-              </button>
-              <button className="w-9 h-8 rounded-lg flex items-center justify-center text-[#4a5580] hover:text-[#c0392b] hover:bg-[#fde8e6] border border-[#dde2ef] hover:border-[#e74c3c]/30 transition">
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6" /></svg>
-              </button>
-            </div>
-          </div>
-        ))}
+        {errorForm && <p className="text-sm text-[#c0392b] mt-3">{errorForm}</p>}
       </div>
 
-      {modal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-[#dde2ef] w-full max-w-sm p-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>{editItem ? "Editar categoría" : "Nueva categoría"}</h2>
-              <button onClick={() => setModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8891b0] hover:bg-[#eef1f8] transition">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" /></svg>
-              </button>
+      {error && (
+        <div className="bg-[#fde8e6] text-[#c0392b] text-sm rounded-xl p-4 border border-[#f5c6c2]">
+          {error} — verifica que el backend esté corriendo en {API_BASE}.
+        </div>
+      )}
+
+      {sinDatos && (
+        <div className="bg-[#fdf3e3] text-[#8a5a14] text-sm rounded-xl p-4 border border-[#f3dcb3]">
+          No hay ventas en el período elegido, así que todos los productos quedan en clase C. Prueba con un período más largo o importa ventas.
+        </div>
+      )}
+
+      {datos && (
+        <>
+          {/* Resumen en una frase */}
+          {!sinDatos && datos.resumen[0].productos > 0 && (
+            <div className="bg-[#eef1f8] rounded-xl px-5 py-4 text-sm text-[#0d1530] leading-relaxed">
+              Tus <b>{datos.resumen[0].productos} productos estrella</b> ({datos.resumen[0].porcentaje_productos} % de tu catálogo) generan el{" "}
+              <b>{datos.resumen[0].porcentaje_ingresos} % de tus ventas</b>. Priorízalos al reponer stock.
             </div>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Nombre</label>
-                <input type="text" defaultValue={editItem?.nombre} className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
-              </div>
-              <div>
-                <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Descripción</label>
-                <textarea defaultValue={editItem?.descripcion} rows={2}
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] resize-none" />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button onClick={() => setModal(false)} className="flex-1 py-3 rounded-xl bg-[#fde8e6] text-[#c0392b] text-sm font-600 hover:bg-[#e74c3c] hover:text-white transition" style={{ fontWeight: 600 }}>Cancelar</button>
-                <button onClick={() => setModal(false)} className="flex-1 py-3 rounded-xl bg-[#1e2d5a] text-white text-sm font-600 hover:bg-[#152045] transition" style={{ fontWeight: 600 }}>Guardar</button>
-              </div>
+          )}
+
+          {/* Resumen por clase */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {datos.resumen.map((r) => (
+              <button key={r.clase} onClick={() => setFiltroClase(filtroClase === r.clase ? "todas" : r.clase)}
+                className={`text-left bg-white rounded-xl p-4 border shadow-sm transition ${filtroClase === r.clase ? "border-[#1e2d5a] ring-1 ring-[#1e2d5a]" : "border-[#dde2ef] hover:border-[#3554a5]"}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm ${ESTILO[r.clase].badge}`} style={{ fontWeight: 700 }}>{r.clase}</span>
+                  <span className="text-sm text-[#0d1530]" style={{ fontWeight: 600 }}>{ESTILO[r.clase].titulo}</span>
+                </div>
+                <p className="text-2xl text-[#0d1530]" style={{ fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>
+                  {r.productos} <span className="text-sm text-[#8891b0]" style={{ fontWeight: 500 }}>productos ({r.porcentaje_productos}%)</span>
+                </p>
+                <p className="text-sm text-[#4a5580] mt-1">
+                  {pesos(r.ingresos)} · <b>{r.porcentaje_ingresos}%</b> de las ventas
+                </p>
+                <p className="text-xs text-[#8891b0] mt-1.5">{ESTILO[r.clase].descripcion}</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Comparación visual: pocos productos, muchas ventas */}
+          {!sinDatos && (
+            <div className="bg-white rounded-xl p-5 border border-[#dde2ef] shadow-sm space-y-4">
+              {[
+                { titulo: "Productos", valor: (r: ResumenClase) => r.porcentaje_productos, cantidad: (r: ResumenClase) => `${r.productos}` },
+                { titulo: "Ventas", valor: (r: ResumenClase) => r.porcentaje_ingresos, cantidad: (r: ResumenClase) => pesos(r.ingresos) },
+              ].map((fila) => (
+                <div key={fila.titulo} className="flex items-center gap-4">
+                  <span className="w-20 shrink-0 text-sm text-[#0d1530]" style={{ fontWeight: 600 }}>{fila.titulo}</span>
+                  <div className="flex-1 flex h-11 gap-0.5 rounded-lg overflow-hidden">
+                    {datos.resumen.map((r) => {
+                      const pct = fila.valor(r);
+                      if (pct <= 0) return null;
+                      return (
+                        <div
+                          key={r.clase}
+                          style={{ width: `${pct}%`, background: ESTILO[r.clase].barra }}
+                          title={`${ESTILO[r.clase].titulo}: ${fila.cantidad(r)} (${pct}%)`}
+                          className={`flex items-center justify-center text-xs overflow-hidden whitespace-nowrap ${r.clase === "C" ? "text-[#1e2d5a]" : "text-white"}`}
+                          
+                        >
+                          {pct >= 9 && <span style={{ fontWeight: 700 }}>{r.clase} · {pct}%</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Tabla */}
+          <div className="bg-white rounded-xl border border-[#dde2ef] shadow-sm overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#eef1f8] flex items-center justify-between flex-wrap gap-2">
+              <h2 className="text-sm font-600 text-[#0d1530]" style={{ fontWeight: 600 }}>
+                Detalle por producto {filtroClase !== "todas" && `· clase ${filtroClase}`}
+              </h2>
+              <p className="text-xs text-[#8891b0]">
+                {visibles.length} de {datos.total_productos} productos · Total {pesos(datos.total_ingresos)}
+                {sinVentas > 0 && ` · ${sinVentas} sin ventas en el período`}
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[#f5f7fc] border-b border-[#dde2ef]">
+                    {["#", "Producto", "Categoría", "Unidades", "Ventas ($)", "% de las ventas", "% acumulado", "Grupo"].map((h) => (
+                      <th key={h} className="px-4 py-3 text-left text-xs font-600 text-[#8891b0] uppercase tracking-wider whitespace-nowrap" style={{ fontWeight: 600 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#eef1f8]">
+                  {visibles.length === 0 && (
+                    <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-[#8891b0]">No hay productos para mostrar.</td></tr>
+                  )}
+                  {visibles.map((p) => (
+                    <tr key={p.producto_id} className="hover:bg-[#f5f7fc] transition-colors">
+                      <td className="px-4 py-3 text-xs text-[#8891b0]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{p.posicion}</td>
+                      <td className="px-4 py-3 text-[#0d1530]" style={{ fontWeight: 500 }}>{p.nombre}</td>
+                      <td className="px-4 py-3 text-[#4a5580]">{p.categoria}</td>
+                      <td className="px-4 py-3 text-[#4a5580]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{p.unidades}</td>
+                      <td className="px-4 py-3 text-[#0d1530]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{pesos(p.ingresos)}</td>
+                      <td className="px-4 py-3 text-[#4a5580]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{p.porcentaje}%</td>
+                      <td className="px-4 py-3 text-[#4a5580]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{p.porcentaje_acumulado}%</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex w-7 h-7 rounded-lg items-center justify-center text-xs ${ESTILO[p.clase].badge}`} style={{ fontWeight: 700 }}>{p.clase}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

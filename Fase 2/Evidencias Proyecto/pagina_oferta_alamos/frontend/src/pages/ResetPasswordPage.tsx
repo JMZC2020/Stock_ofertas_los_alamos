@@ -4,14 +4,17 @@ const API_BASE = "http://localhost:8000";
 
 interface Props {
   onBack: () => void;
+  /** Token que llega en el enlace del correo (?reset_token=...). Si existe, se salta directo al paso 2. */
+  initialToken?: string | null;
 }
 
-export default function ResetPasswordPage({ onBack }: Props) {
-  const [step, setStep] = useState<1 | 2>(1);
+export default function ResetPasswordPage({ onBack, initialToken = null }: Props) {
+  const [step, setStep] = useState<1 | 2>(initialToken ? 2 : 1);
+  const [enviado, setEnviado] = useState(false);
   const [email, setEmail] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
-  const [resetToken, setResetToken] = useState<string | null>(null);
+  const resetToken = initialToken;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -31,11 +34,8 @@ export default function ResetPasswordPage({ onBack }: Props) {
       });
       if (!res.ok) throw new Error("No se pudo procesar la solicitud");
 
-      const data = await res.json();
-      // ⚠️ Modo desarrollo: como aún no hay envío de correo real (SMTP),
-      // el token llega directo en la respuesta en vez de por email.
-      setResetToken(data.token_desarrollo ?? null);
-      setStep(2);
+      
+      setEnviado(true);
     } catch (err: any) {
       setError(err.message ?? "No se pudo conectar con el servidor");
     } finally {
@@ -57,7 +57,7 @@ export default function ResetPasswordPage({ onBack }: Props) {
       return;
     }
     if (!resetToken) {
-      setError("No se encontró un token de recuperación válido. Vuelve a solicitarlo.");
+      setError("El enlace no es válido. Solicita uno nuevo desde el inicio de sesión.");
       return;
     }
     setLoading(true);
@@ -121,7 +121,25 @@ export default function ResetPasswordPage({ onBack }: Props) {
             </div>
           )}
 
-          {step === 1 ? (
+          {step === 1 && enviado ? (
+            <>
+              <h2 className="text-lg font-700 text-[#0d1530] mb-1" style={{ fontWeight: 700 }}>Revisa tu correo</h2>
+              <p className="text-sm text-[#8891b0] mb-4 leading-relaxed">
+                Si <b>{email}</b> está registrado, te enviamos un enlace para restablecer tu contraseña.
+                Es válido por 1 hora y de un solo uso.
+              </p>
+              <p className="text-xs text-[#8891b0] bg-[#f5f7fc] rounded-lg px-4 py-3 mb-6 leading-relaxed">
+                ¿No llegó? Revisa la carpeta de spam o vuelve a solicitarlo en unos minutos.
+              </p>
+              <button
+                onClick={onBack}
+                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm tracking-wide transition-all shadow-md"
+                style={{ fontWeight: 700 }}
+              >
+                Volver al inicio de sesión
+              </button>
+            </>
+          ) : step === 1 ? (
             <>
               <h2 className="text-lg font-700 text-[#0d1530] mb-1" style={{ fontWeight: 700 }}>Verificar identidad</h2>
               <p className="text-sm text-[#8891b0] mb-6">Ingrese su correo electrónico para recibir un enlace de restablecimiento.</p>
@@ -156,12 +174,6 @@ export default function ResetPasswordPage({ onBack }: Props) {
             <>
               <h2 className="text-lg font-700 text-[#0d1530] mb-1" style={{ fontWeight: 700 }}>Nueva contraseña</h2>
               <p className="text-sm text-[#8891b0] mb-6">Ingrese y confirme su nueva contraseña.</p>
-
-              {resetToken && (
-                <p className="text-xs text-[#8891b0] bg-[#fdf3e3] rounded-lg px-4 py-3 mb-4 leading-relaxed">
-                  Modo desarrollo: aún no hay envío de correo real configurado, así que el enlace se validó automáticamente en esta sesión.
-                </p>
-              )}
 
               <div className="mb-4">
                 <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>

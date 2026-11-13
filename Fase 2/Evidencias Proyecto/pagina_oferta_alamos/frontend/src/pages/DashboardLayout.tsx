@@ -6,6 +6,8 @@ import VentasPage from "./VentasPage";
 import ProveedorPage from "./ProveedorPage";
 import AlertasPage from "./AlertasPage";
 import ClasificacionPage from "./ClasificacionPage";
+import NotificationBell from "../components/NotificationBell";
+import UserMenu from "../components/UserMenu";
 
 type NavItem = "dashboard" | "productos" | "ventas" | "proveedor" | "alertas" | "clasificacion";
 
@@ -82,7 +84,6 @@ const navItems: { id: NavItem; label: string; icon: React.ReactNode }[] = [
 export default function DashboardLayout({ onLogout }: Props) {
   const [active, setActive] = useState<NavItem>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [notifOpen, setNotifOpen] = useState(false);
 
   const renderPage = () => {
     switch (active) {
@@ -118,10 +119,11 @@ export default function DashboardLayout({ onLogout }: Props) {
             <button
               key={item.id}
               onClick={() => setActive(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all group relative ${active === item.id
-                ? "bg-[#3554a5]/30 text-white"
-                : "text-[#a8bde8] hover:bg-white/5 hover:text-white"
-                }`}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all group relative ${
+                active === item.id
+                  ? "bg-[#3554a5]/30 text-white"
+                  : "text-[#a8bde8] hover:bg-white/5 hover:text-white"
+              }`}
             >
               {active === item.id && (
                 <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r bg-[#4a6bbf]" />
@@ -165,43 +167,11 @@ export default function DashboardLayout({ onLogout }: Props) {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Notifications */}
-            <div className="relative">
-              <button
-                onClick={() => setNotifOpen(!notifOpen)}
-                className="relative w-8 h-8 rounded-lg flex items-center justify-center text-[#a8bde8] hover:text-white hover:bg-white/10 transition"
-              >
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                </svg>
-              </button>
-              {notifOpen && (
-                <div className="absolute right-0 top-10 w-72 bg-white rounded-xl shadow-xl border border-[#dde2ef] z-50 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-[#eef1f8]">
-                    <span className="text-sm font-600 text-[#0d1530]" style={{ fontWeight: 600 }}>Notificaciones</span>
-                  </div>
-                  {[
-                    { msg: "No hay notificaciones", type: "alert" },
-                  ].map((n, i) => (
-                    <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-[#f5f7fc] cursor-pointer border-b border-[#eef1f8] last:border-0">
-                      <span className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${n.type === "alert" ? "bg-[#e74c3c]" : "bg-[#e67e22]"}`} />
-                      <span className="text-xs text-[#4a5580]">{n.msg}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Notificaciones: alertas reales de stock y vencimiento */}
+            <NotificationBell refreshKey={active} onVerTodas={() => setActive("alertas")} />
 
-            {/* User */}
-            <div className="flex items-center gap-2 pl-1">
-              <div className="w-8 h-8 rounded-full bg-[#3554a5] flex items-center justify-center text-white text-xs font-700" style={{ fontWeight: 700 }}>
-                ML
-              </div>
-              {sidebarOpen && (
-                <span className="text-[#a8bde8] text-sm hidden sm:block">Margarita L.</span>
-              )}
-            </div>
+            {/* Usuario: nombre y foto reales, edición de perfil */}
+            <UserMenu onLogout={onLogout} />
 
             <button
               onClick={onLogout}

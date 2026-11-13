@@ -4,10 +4,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.deps import get_current_user
 from app.models.producto import Producto
 from app.schemas.alerta import AlertaOut
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 def _alertas_stock(productos: list[Producto]) -> list[AlertaOut]:
@@ -76,7 +77,7 @@ def _alertas_vencimiento(productos: list[Producto]) -> list[AlertaOut]:
 def listar_alertas(db: Session = Depends(get_db)):
     """HU-16 / HU-17: Centro de alertas — stock bajo/agotado y productos por vencer.
     Solo considera productos activos. Se calcula en vivo en cada consulta."""
-    productos = db.query(Producto).filter(Producto.activo == True).all()  # noqa: E712
+    productos = db.query(Producto).filter(Producto.activo == True).all()  
 
     alertas = _alertas_stock(productos) + _alertas_vencimiento(productos)
 

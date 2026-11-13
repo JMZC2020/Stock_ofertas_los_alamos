@@ -4,11 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.deps import get_current_user
 from app.models.proveedor import Proveedor
 from app.models.producto import Producto
 from app.schemas.proveedor import ProveedorCreate, ProveedorUpdate, ProveedorOut
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.post("/", response_model=ProveedorOut, status_code=status.HTTP_201_CREATED)
@@ -31,7 +32,7 @@ def listar_proveedores(
     query = db.query(Proveedor)
 
     if solo_activos:
-        query = query.filter(Proveedor.activo == True)  # noqa: E712
+        query = query.filter(Proveedor.activo == True)  
     if nombre:
         query = query.filter(Proveedor.nombre.ilike(f"%{nombre}%"))
 

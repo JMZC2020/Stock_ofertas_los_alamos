@@ -6,11 +6,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from app.core.database import get_db
+from app.core.deps import get_current_user
 from app.models.producto import Producto
 from app.models.venta import Venta
 from app.schemas.producto import ProductoCreate, ProductoUpdate, ProductoOut, ProductoImportResumen
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.post("/", response_model=ProductoOut, status_code=status.HTTP_201_CREATED)
@@ -35,7 +36,7 @@ def listar_productos(
     query = db.query(Producto)
 
     if solo_activos:
-        query = query.filter(Producto.activo == True)  # noqa: E712
+        query = query.filter(Producto.activo == True)  
     if nombre:
         query = query.filter(Producto.nombre.ilike(f"%{nombre}%"))
     if categoria:
@@ -62,7 +63,7 @@ def actualizar_producto(producto_id: int, cambios: ProductoUpdate, db: Session =
     if not producto:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-    datos_nuevos = cambios.model_dump(exclude_unset=True)  # solo lo que el frontend mandó
+    datos_nuevos = cambios.model_dump(exclude_unset=True)  
     for campo, valor in datos_nuevos.items():
         setattr(producto, campo, valor)
 
@@ -99,7 +100,7 @@ def _num(valor, default=0.0) -> float:
     """Convierte un valor del Excel a número, devolviendo `default` si no se puede."""
     try:
         n = float(valor)
-        if n != n:  # NaN
+        if n != n:  
             return default
         return n
     except (TypeError, ValueError):
@@ -153,7 +154,7 @@ def importar_productos_excel(archivo: UploadFile = File(...), db: Session = Depe
     productos_omitidos = 0
 
     for idx, fila in df.iterrows():
-        num_fila = idx + 5  # +5: 4 filas de encabezado/título antes de los datos, + 1-index
+        num_fila = idx + 5  
 
         try:
             nombre = str(fila["DESCRIPCION"]).strip()

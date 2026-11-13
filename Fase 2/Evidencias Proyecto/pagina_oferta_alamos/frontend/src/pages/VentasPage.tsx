@@ -5,7 +5,7 @@ const API_BASE = "http://localhost:8000";
 
 interface Venta {
   id: number;
-  fecha: string; // ISO
+  fecha: string; 
   productoId: number;
   producto: string;
   cantidad: number;
@@ -21,7 +21,7 @@ interface ProductoOpcion {
   precioVenta: number;
 }
 
-// Convierte lo que devuelve el backend (snake_case, Decimal) al formato de esta pantalla.
+
 function mapFromApi(v: any): Venta {
   return {
     id: v.id,
@@ -79,7 +79,7 @@ export default function VentasPage() {
         }))
       );
     } catch {
-      // silencioso: no bloquea el historial de ventas si productos falla
+      
     }
   };
 
@@ -99,7 +99,7 @@ export default function VentasPage() {
   const ventasHoy = vigentes.filter((v) => esMismoDia(v.fecha, hoy));
   const totalHoy = ventasHoy.reduce((acc, v) => acc + v.total, 0);
 
-  // Últimos 7 días (incluyendo hoy), para el gráfico y el total semanal.
+ 
   const dias7: { fecha: Date; label: string }[] = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(hoy);
     d.setDate(hoy.getDate() - (6 - i));
@@ -214,6 +214,53 @@ export default function VentasPage() {
     }
   };
 
+  const handleEliminar = async (v: Venta) => {
+    const aviso = v.anulada
+      ? "Esta venta ya estaba anulada, así que el stock no cambiará."
+      : "El stock del producto se restituirá automáticamente.";
+    if (!confirm(`¿Eliminar DEFINITIVAMENTE la venta #${v.id} de "${v.producto}"?\n${aviso}\nEsta acción no se puede deshacer.`)) return;
+    try {
+      const res = await fetch(`${API_BASE}/ventas/${v.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const detalle = await res.json().catch(() => null);
+        throw new Error(detalle?.detail ?? `Error ${res.status} al eliminar`);
+      }
+      await cargarVentas();
+      await cargarProductos();
+    } catch (err: any) {
+      alert(err.message ?? "No se pudo eliminar la venta");
+    }
+  };
+
+  const handleLimpiar = async () => {
+    if (ventas.length === 0) {
+      alert("No hay ventas para limpiar.");
+      return;
+    }
+    const escrito = prompt(
+      `Se eliminarán DEFINITIVAMENTE las ${ventas.length} ventas del historial y se restituirá el stock de las vigentes.\n` +
+        `Esta acción no se puede deshacer.\n\nPara confirmar, escribe LIMPIAR:`
+    );
+    if (escrito === null) return;
+    if (escrito.trim().toUpperCase() !== "LIMPIAR") {
+      alert("Texto incorrecto. No se eliminó nada.");
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/ventas/`, { method: "DELETE" });
+      if (!res.ok) {
+        const detalle = await res.json().catch(() => null);
+        throw new Error(detalle?.detail ?? `Error ${res.status} al limpiar`);
+      }
+      const data = await res.json();
+      await cargarVentas();
+      await cargarProductos();
+      alert(data.mensaje ?? "Historial limpiado.");
+    } catch (err: any) {
+      alert(err.message ?? "No se pudo limpiar el historial");
+    }
+  };
+
   return (
     <div className="p-6 space-y-5">
       <div className="flex items-center justify-between">
@@ -234,6 +281,13 @@ export default function VentasPage() {
             {importando ? "Importando..." : "Importar Excel"}
             <input type="file" accept=".xlsx,.xls" onChange={handleImportarExcel} disabled={importando} className="hidden" />
           </label>
+          <button
+            onClick={handleLimpiar}
+            className="px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#c0392b] border border-[#f5c6c2] hover:bg-[#fde8e6]"
+            style={{ fontWeight: 600 }}
+          >
+            Limpiar ventas
+          </button>
         </div>
       </div>
 
@@ -319,11 +373,16 @@ export default function VentasPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {!v.anulada && (
-                        <button onClick={() => handleAnular(v)} className="text-xs font-600 text-[#c0392b] hover:underline" style={{ fontWeight: 600 }}>
-                          Anular
+                      <div className="flex gap-3">
+                        {!v.anulada && (
+                          <button onClick={() => handleAnular(v)} className="text-xs font-600 text-[#e67e22] hover:underline" style={{ fontWeight: 600 }}>
+                            Anular
+                          </button>
+                        )}
+                        <button onClick={() => handleEliminar(v)} className="text-xs font-600 text-[#c0392b] hover:underline" style={{ fontWeight: 600 }}>
+                          Eliminar
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))}

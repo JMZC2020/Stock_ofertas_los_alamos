@@ -39,6 +39,11 @@ from app.routers import dashboard
 app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 
 
+#Clasificacion abc
+from app.routers import clasificacion
+app.include_router(clasificacion.router, prefix="/clasificacion", tags=["Clasificación"])
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.FRONTEND_ORIGIN],
