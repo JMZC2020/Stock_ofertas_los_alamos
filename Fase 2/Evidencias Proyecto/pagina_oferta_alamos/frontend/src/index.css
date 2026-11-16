@@ -5,20 +5,22 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --color-navy-950: #0a0f1e;
-  --color-navy-900: #0d1530;
-  --color-navy-800: #152045;
-  --color-navy-700: #1e2d5a;
-  --color-navy-600: #2a3f7e;
-  --color-navy-500: #3554a5;
-  --color-navy-400: #4a6bbf;
-  --color-navy-200: #a8bde8;
-  --color-navy-100: #dce5f5;
-  --color-navy-50: #f0f4fc;
+  /* Marca: verde menta #7FF1D2 (color pedido por el cliente) */
+  --color-brand-900: #0f2b26;
+  --color-brand-800: #0b5a47;
+  --color-brand-700: #0b6b55;
+  --color-brand-600: #0e8f72;
+  --color-brand-500: #12a582;
+  --color-brand-400: #5ee3be;
+  --color-brand-300: #7ff1d2;
+  --color-brand-200: #b5ebdd;
+  --color-brand-100: #d3ebe4;
+  --color-brand-50: #eaf8f3;
 
-  --color-alert-600: #c0392b;
-  --color-alert-500: #e74c3c;
-  --color-alert-100: #fde8e6;
+  --color-alert-700: #c62828;
+  --color-alert-600: #d32f2f;
+  --color-alert-500: #e53935;
+  --color-alert-100: #fdecea;
 
   --color-warn-500: #e67e22;
   --color-warn-100: #fdf3e3;
@@ -28,12 +30,12 @@
   --color-success-100: #e8f8ef;
 
   --color-surface: #ffffff;
-  --color-surface-soft: #f5f7fc;
-  --color-surface-muted: #eef1f8;
-  --color-border: #dde2ef;
-  --color-text-primary: #0d1530;
-  --color-text-secondary: #4a5580;
-  --color-text-muted: #8891b0;
+  --color-surface-soft: #f1faf7;
+  --color-surface-muted: #e4f5f0;
+  --color-border: #d3ebe4;
+  --color-text-primary: #0f2b26;
+  --color-text-secondary: #3e5f57;
+  --color-text-muted: #5f7f77;
 }
 
 *, *::before, *::after {
@@ -56,5 +58,5 @@ body {
 /* Hide scrollbar default, show on hover */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #c5cce0; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #a0aac4; }
+::-webkit-scrollbar-thumb { background: #b5d8ce; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #8fc4b6; }

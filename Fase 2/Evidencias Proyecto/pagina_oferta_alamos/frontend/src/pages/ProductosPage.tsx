@@ -10,7 +10,7 @@ interface Product {
   proveedorId: number | null;
   stock: number;
   precioCompra: number;
-  precio: number; // precio de venta
+  precio: number; 
   estado: "Activo" | "Vence" | "Agotado";
   fechaCaducidad: string;
   ubicacion: string;
@@ -25,8 +25,7 @@ const PAGE_SIZE = 6;
 
 type ModalMode = null | "add" | "edit" | "view";
 
-// Convierte lo que devuelve el backend (nombres en snake_case, tipos Decimal)
-// al formato que usa esta pantalla.
+
 function mapFromApi(p: any): Product {
   let estado: Product["estado"] = "Activo";
   if (p.stock_actual === 0) {
@@ -53,7 +52,7 @@ function mapFromApi(p: any): Product {
   };
 }
 
-// Convierte el formulario de esta pantalla al formato que espera el backend.
+
 function mapToApi(form: Partial<Product>) {
   return {
     nombre: form.nombre,
@@ -76,7 +75,7 @@ const estadoBadge = (estado: Product["estado"]) => {
 const stockBadge = (stock: number) => {
   if (stock === 0) return <span className="font-mono font-600 text-[#c0392b]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{stock}</span>;
   if (stock <= 5) return <span className="font-mono font-600 text-[#e67e22]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{stock}</span>;
-  return <span className="font-mono font-600 text-[#0d1530]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{stock}</span>;
+  return <span className="font-mono font-600 text-[#0F2B26]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{stock}</span>;
 };
 
 export default function ProductosPage() {
@@ -113,11 +112,11 @@ export default function ProductosPage() {
   const cargarProveedores = async () => {
     try {
       const res = await fetch(`${API_BASE}/proveedores/`);
-      if (!res.ok) return; // si falla, el selector simplemente queda vacío
+      if (!res.ok) return; 
       const data = await res.json();
       setProveedorOpciones(data.map((p: any) => ({ id: p.id, nombre: p.nombre })));
     } catch {
-      // silencioso: no bloquea el CRUD de productos si proveedores falla
+      
     }
   };
 
@@ -252,19 +251,19 @@ export default function ProductosPage() {
     <div className="p-6 space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Listado de Productos</h1>
-          <p className="text-sm text-[#8891b0] mt-0.5">
+          <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Listado de Productos</h1>
+          <p className="text-sm text-[#5F7F77] mt-0.5">
             {loading ? "Cargando..." : `${filtered.length} productos encontrados`}
           </p>
         </div>
         <div className="flex gap-2">
-          <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#4a5580] border border-[#dde2ef] hover:border-[#3554a5] text-sm font-600 transition cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
+          <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582] text-sm font-600 transition cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
             {importando ? "Importando..." : "Importar Excel (POS)"}
             <input type="file" accept=".xlsx,.xls" onChange={handleImportarExcel} disabled={importando} className="hidden" />
           </label>
           <button
             onClick={openAdd}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm font-600 shadow transition"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm font-600 shadow transition"
             style={{ fontWeight: 600 }}
           >
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -282,10 +281,10 @@ export default function ProductosPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 border border-[#dde2ef] shadow-sm">
+      <div className="bg-white rounded-xl p-4 border border-[#D3EBE4] shadow-sm">
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-48">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8891b0]" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5F7F77]" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" strokeLinecap="round" />
             </svg>
             <input
@@ -293,10 +292,10 @@ export default function ProductosPage() {
               placeholder="Buscar producto por nombre..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full pl-9 pr-9 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm text-[#0d1530] focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]"
+              className="w-full pl-9 pr-9 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm text-[#0F2B26] focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8891b0] hover:text-[#4a5580]">
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5F7F77] hover:text-[#3E5F57]">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" /></svg>
               </button>
             )}
@@ -304,7 +303,7 @@ export default function ProductosPage() {
           <select
             value={catFilter}
             onChange={(e) => { setCatFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm text-[#4a5580] focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] cursor-pointer"
+            className="px-3 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm text-[#3E5F57] focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
           >
             <option value="">Categoría</option>
             {categories.map((c) => <option key={c}>{c}</option>)}
@@ -312,7 +311,7 @@ export default function ProductosPage() {
           <select
             value={provFilter}
             onChange={(e) => { setProvFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm text-[#4a5580] focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] cursor-pointer"
+            className="px-3 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm text-[#3E5F57] focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
           >
             <option value="">Proveedor</option>
             {proveedores.map((p) => <option key={p}>{p}</option>)}
@@ -321,10 +320,10 @@ export default function ProductosPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-[#dde2ef] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-[#D3EBE4] shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-[#f5f7fc] text-left text-xs text-[#8891b0] uppercase tracking-wider">
+            <tr className="bg-[#F1FAF7] text-left text-xs text-[#5F7F77] uppercase tracking-wider">
               <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Nombre</th>
               <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Categoría</th>
               <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Proveedor</th>
@@ -334,10 +333,10 @@ export default function ProductosPage() {
               <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#eef1f8]">
+          <tbody className="divide-y divide-[#E4F5F0]">
             {!loading && pageItems.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-sm text-[#8891b0]">
+                <td colSpan={7} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
                   {products.length === 0
                     ? 'Aún no hay productos registrados. Usa "Agregar producto" para comenzar.'
                     : "No hay productos que calcen con la búsqueda/filtros."}
@@ -345,22 +344,22 @@ export default function ProductosPage() {
               </tr>
             )}
             {pageItems.map((p) => (
-              <tr key={p.id} className="hover:bg-[#f9fafd]">
-                <td className="px-4 py-3 font-500 text-[#0d1530]" style={{ fontWeight: 500 }}>{p.nombre}</td>
-                <td className="px-4 py-3 text-[#4a5580]">{p.categoria}</td>
-                <td className="px-4 py-3 text-[#4a5580]">{p.proveedor || "—"}</td>
+              <tr key={p.id} className="hover:bg-[#F4FBF8]">
+                <td className="px-4 py-3 font-500 text-[#0F2B26]" style={{ fontWeight: 500 }}>{p.nombre}</td>
+                <td className="px-4 py-3 text-[#3E5F57]">{p.categoria}</td>
+                <td className="px-4 py-3 text-[#3E5F57]">{p.proveedor || "—"}</td>
                 <td className="px-4 py-3 text-right">{stockBadge(p.stock)}</td>
-                <td className="px-4 py-3 text-right text-[#0d1530]">${p.precio.toLocaleString("es-CL")}</td>
+                <td className="px-4 py-3 text-right text-[#0F2B26]">${p.precio.toLocaleString("es-CL")}</td>
                 <td className="px-4 py-3">{estadoBadge(p.estado)}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => openView(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8891b0] hover:text-[#1e2d5a] hover:bg-[#eef1f8] transition" title="Ver detalle">
+                    <button onClick={() => openView(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] hover:bg-[#E4F5F0] transition" title="Ver detalle">
                       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><circle cx="12" cy="12" r="3" /></svg>
                     </button>
-                    <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8891b0] hover:text-[#3554a5] hover:bg-[#eef1f8] transition" title="Editar">
+                    <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] hover:bg-[#E4F5F0] transition" title="Editar">
                       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                     </button>
-                    <button onClick={() => handleDelete(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8891b0] hover:text-[#c0392b] hover:bg-[#fde8e6] transition" title="Eliminar">
+                    <button onClick={() => handleDelete(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#c0392b] hover:bg-[#fde8e6] transition" title="Eliminar">
                       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" /></svg>
                     </button>
                   </div>
@@ -371,15 +370,15 @@ export default function ProductosPage() {
         </table>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#eef1f8]">
-          <span className="text-xs text-[#8891b0]">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[#E4F5F0]">
+          <span className="text-xs text-[#5F7F77]">
             Mostrando {filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} de {filtered.length}
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#4a5580] hover:text-[#1e2d5a] hover:bg-[#eef1f8] disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#3E5F57] hover:text-[#0B6B55] hover:bg-[#E4F5F0] disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" strokeLinecap="round" /></svg>
             </button>
@@ -387,7 +386,7 @@ export default function ProductosPage() {
               <button
                 key={n}
                 onClick={() => setPage(n)}
-                className={`w-8 h-8 rounded-lg text-xs font-600 transition ${n === page ? "bg-[#1e2d5a] text-white" : "text-[#4a5580] hover:bg-[#eef1f8]"}`}
+                className={`w-8 h-8 rounded-lg text-xs font-600 transition ${n === page ? "bg-[#7FF1D2] text-[#0F2B26]" : "text-[#3E5F57] hover:bg-[#E4F5F0]"}`}
                 style={{ fontWeight: 600 }}
               >
                 {n}
@@ -396,7 +395,7 @@ export default function ProductosPage() {
             <button
               onClick={() => setPage(Math.min(totalPages, page + 1))}
               disabled={page === totalPages}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#4a5580] hover:text-[#1e2d5a] hover:bg-[#eef1f8] disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#3E5F57] hover:text-[#0B6B55] hover:bg-[#E4F5F0] disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
               <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" strokeLinecap="round" /></svg>
             </button>
@@ -407,12 +406,12 @@ export default function ProductosPage() {
       {/* Modal */}
       {modal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-[#dde2ef] w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#eef1f8]">
-              <h2 className="font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>
+          <div className="bg-white rounded-2xl shadow-2xl border border-[#D3EBE4] w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#E4F5F0]">
+              <h2 className="font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>
                 {modal === "view" ? "Detalle del producto" : modal === "edit" ? "Editar producto" : "Registrar producto"}
               </h2>
-              <button onClick={closeModal} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8891b0] hover:text-[#0d1530] hover:bg-[#eef1f8] transition">
+              <button onClick={closeModal} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0F2B26] hover:bg-[#E4F5F0] transition">
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" /></svg>
               </button>
             </div>
@@ -430,13 +429,13 @@ export default function ProductosPage() {
                   ["Fecha caducidad", selected.fechaCaducidad || "—"],
                   ["Ubicación", selected.ubicacion || "—"],
                 ].map(([label, val]) => (
-                  <div key={label as string} className="flex justify-between py-2.5 border-b border-[#eef1f8] last:border-0">
-                    <span className="text-sm text-[#8891b0]">{label}</span>
-                    <span className="text-sm font-500 text-[#0d1530]" style={{ fontWeight: 500 }}>{String(val)}</span>
+                  <div key={label as string} className="flex justify-between py-2.5 border-b border-[#E4F5F0] last:border-0">
+                    <span className="text-sm text-[#5F7F77]">{label}</span>
+                    <span className="text-sm font-500 text-[#0F2B26]" style={{ fontWeight: 500 }}>{String(val)}</span>
                   </div>
                 ))}
                 <div className="pt-2">
-                  <button onClick={closeModal} className="w-full py-3 rounded-xl bg-[#f5f7fc] text-[#4a5580] text-sm font-600 hover:bg-[#eef1f8] transition" style={{ fontWeight: 600 }}>
+                  <button onClick={closeModal} className="w-full py-3 rounded-xl bg-[#F1FAF7] text-[#3E5F57] text-sm font-600 hover:bg-[#E4F5F0] transition" style={{ fontWeight: 600 }}>
                     Cerrar
                   </button>
                 </div>
@@ -444,37 +443,37 @@ export default function ProductosPage() {
             ) : (
               <div className="px-6 py-5 space-y-4">
                 <div>
-                  <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Nombre</label>
+                  <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Nombre</label>
                   <input
                     type="text"
                     value={form.nombre ?? ""}
                     onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Precio de compra</label>
+                    <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Precio de compra</label>
                     <input type="number" value={form.precioCompra ?? ""} onChange={(e) => setForm({ ...form, precioCompra: +e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
                   </div>
                   <div>
-                    <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Precio venta</label>
+                    <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Precio venta</label>
                     <input type="number" value={form.precio ?? ""} onChange={(e) => setForm({ ...form, precio: +e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Stock inicial</label>
+                    <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Stock inicial</label>
                     <input type="number" value={form.stock ?? ""} onChange={(e) => setForm({ ...form, stock: +e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
                   </div>
                   <div>
-                    <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Categoría</label>
+                    <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Categoría</label>
                     <input type="text" value={form.categoria ?? ""} onChange={(e) => setForm({ ...form, categoria: e.target.value })}
                       list="categorias-existentes"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
                     <datalist id="categorias-existentes">
                       {categories.map((c) => <option key={c} value={c} />)}
                     </datalist>
@@ -482,11 +481,11 @@ export default function ProductosPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Proveedor</label>
+                    <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Proveedor</label>
                     <select
                       value={form.proveedorId ?? ""}
                       onChange={(e) => setForm({ ...form, proveedorId: e.target.value ? +e.target.value : null })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] cursor-pointer"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
                     >
                       <option value="">Sin asignar</option>
                       {proveedorOpciones.map((p) => (
@@ -495,21 +494,21 @@ export default function ProductosPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Fecha caducidad</label>
+                    <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Fecha caducidad</label>
                     <input type="date" value={form.fechaCaducidad ?? ""} onChange={(e) => setForm({ ...form, fechaCaducidad: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Ubicación en el almacén</label>
+                  <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Ubicación en el almacén</label>
                   <input type="text" value={form.ubicacion ?? ""} onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
                 </div>
                 <div className="flex gap-3 pt-2">
                   <button onClick={closeModal} className="flex-1 py-3 rounded-xl bg-[#fde8e6] text-[#c0392b] text-sm font-600 hover:bg-[#e74c3c] hover:text-white transition" style={{ fontWeight: 600 }}>
                     Cancelar
                   </button>
-                  <button onClick={handleSave} disabled={saving} className="flex-1 py-3 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm font-600 transition disabled:opacity-50" style={{ fontWeight: 600 }}>
+                  <button onClick={handleSave} disabled={saving} className="flex-1 py-3 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm font-600 transition disabled:opacity-50" style={{ fontWeight: 600 }}>
                     {saving ? "Guardando..." : "Guardar producto"}
                   </button>
                 </div>

@@ -79,7 +79,6 @@ export default function VentasPage() {
         }))
       );
     } catch {
-      
     }
   };
 
@@ -99,7 +98,7 @@ export default function VentasPage() {
   const ventasHoy = vigentes.filter((v) => esMismoDia(v.fecha, hoy));
   const totalHoy = ventasHoy.reduce((acc, v) => acc + v.total, 0);
 
- 
+  
   const dias7: { fecha: Date; label: string }[] = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(hoy);
     d.setDate(hoy.getDate() - (6 - i));
@@ -149,7 +148,7 @@ export default function VentasPage() {
       }
 
       await cargarVentas();
-      await cargarProductos(); // el stock cambió
+      await cargarProductos(); 
       resetForm();
       setView("lista");
     } catch (err: any) {
@@ -161,7 +160,7 @@ export default function VentasPage() {
 
   const handleImportarExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0];
-    e.target.value = ""; // permite volver a elegir el mismo archivo después
+    e.target.value = ""; 
     if (!archivo) return;
 
     setImportando(true);
@@ -238,8 +237,8 @@ export default function VentasPage() {
       return;
     }
     const escrito = prompt(
-      `Se eliminarán DEFINITIVAMENTE las ${ventas.length} ventas del historial y se restituirá el stock de las vigentes.\n` +
-        `Esta acción no se puede deshacer.\n\nPara confirmar, escribe LIMPIAR:`
+      `Se eliminarán las ${ventas.length} ventas del historial y se restituirá el stock de las vigentes.\n` +
+        `Esta acción no se puede deshacer.\n\nPara confirmar, escribe "limpiar":`
     );
     if (escrito === null) return;
     if (escrito.trim().toUpperCase() !== "LIMPIAR") {
@@ -265,19 +264,19 @@ export default function VentasPage() {
     <div className="p-6 space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Gestión de Ventas</h1>
-          <p className="text-sm text-[#8891b0] mt-0.5">
+          <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Gestión de Ventas</h1>
+          <p className="text-sm text-[#5F7F77] mt-0.5">
             {loading ? "Cargando..." : "Registre y analice las ventas del sistema"}
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setView("lista")} className={`px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "lista" ? "bg-[#1e2d5a] text-white shadow" : "bg-white text-[#4a5580] border border-[#dde2ef] hover:border-[#3554a5]"}`} style={{ fontWeight: 600 }}>
+          <button onClick={() => setView("lista")} className={`px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "lista" ? "bg-[#7FF1D2] text-[#0F2B26] shadow" : "bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582]"}`} style={{ fontWeight: 600 }}>
             Historial
           </button>
-          <button onClick={() => setView("nueva")} className={`px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "nueva" ? "bg-[#1e2d5a] text-white shadow" : "bg-white text-[#4a5580] border border-[#dde2ef] hover:border-[#3554a5]"}`} style={{ fontWeight: 600 }}>
+          <button onClick={() => setView("nueva")} className={`px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "nueva" ? "bg-[#7FF1D2] text-[#0F2B26] shadow" : "bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582]"}`} style={{ fontWeight: 600 }}>
             + Nueva venta
           </button>
-          <label className={`px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#4a5580] border border-[#dde2ef] hover:border-[#3554a5] cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
+          <label className={`px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582] cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
             {importando ? "Importando..." : "Importar Excel"}
             <input type="file" accept=".xlsx,.xls" onChange={handleImportarExcel} disabled={importando} className="hidden" />
           </label>
@@ -304,10 +303,10 @@ export default function VentasPage() {
           { label: "Ventas semana", value: `$${totalSemana.toLocaleString("es-CL")}`, sub: `${ventasSemanaCount} transacciones` },
           { label: "Ticket promedio", value: `$${Math.round(ticketPromedio).toLocaleString("es-CL")}`, sub: "por transacción" },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl p-4 border border-[#dde2ef] shadow-sm">
-            <p className="text-xs font-500 text-[#8891b0] uppercase tracking-wider mb-1.5" style={{ fontWeight: 500 }}>{s.label}</p>
-            <p className="text-2xl font-800 text-[#0d1530] font-mono" style={{ fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>{s.value}</p>
-            <p className="text-xs text-[#8891b0] mt-1">{s.sub}</p>
+          <div key={s.label} className="bg-white rounded-xl p-4 border border-[#D3EBE4] shadow-sm">
+            <p className="text-xs font-500 text-[#5F7F77] uppercase tracking-wider mb-1.5" style={{ fontWeight: 500 }}>{s.label}</p>
+            <p className="text-2xl font-800 text-[#0F2B26] font-mono" style={{ fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>{s.value}</p>
+            <p className="text-xs text-[#5F7F77] mt-1">{s.sub}</p>
           </div>
         ))}
       </div>
@@ -315,55 +314,55 @@ export default function VentasPage() {
       {view === "lista" ? (
         <>
           {/* Chart */}
-          <div className="bg-white rounded-xl p-5 border border-[#dde2ef] shadow-sm">
-            <h2 className="text-sm font-600 text-[#0d1530] mb-4" style={{ fontWeight: 600 }}>Ventas por día · últimos 7 días</h2>
+          <div className="bg-white rounded-xl p-5 border border-[#D3EBE4] shadow-sm">
+            <h2 className="text-sm font-600 text-[#0F2B26] mb-4" style={{ fontWeight: 600 }}>Ventas por día · últimos 7 días</h2>
             {totalSemana === 0 ? (
-              <div className="flex items-center justify-center text-sm text-[#8891b0]" style={{ height: 160 }}>
+              <div className="flex items-center justify-center text-sm text-[#5F7F77]" style={{ height: 160 }}>
                 Sin ventas registradas todavía.
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={weekData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#eef1f8" vertical={false} />
-                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#8891b0" }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 11, fill: "#8891b0" }} axisLine={false} tickLine={false} width={44} />
-                  <Tooltip formatter={(v) => [`$${Number(v).toLocaleString("es-CL")}`, "Ventas"]} contentStyle={{ borderRadius: 8, border: "1px solid #dde2ef", fontSize: 12 }} />
-                  <Bar dataKey="total" fill="#1e2d5a" radius={[4, 4, 0, 0]} barSize={28} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4F5F0" vertical={false} />
+                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5F7F77" }} axisLine={false} tickLine={false} />
+                  <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 11, fill: "#5F7F77" }} axisLine={false} tickLine={false} width={44} />
+                  <Tooltip formatter={(v) => [`$${Number(v).toLocaleString("es-CL")}`, "Ventas"]} contentStyle={{ borderRadius: 8, border: "1px solid #D3EBE4", fontSize: 12 }} />
+                  <Bar dataKey="total" fill="#12A582" radius={[4, 4, 0, 0]} barSize={28} />
                 </BarChart>
               </ResponsiveContainer>
             )}
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-xl border border-[#dde2ef] shadow-sm overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#eef1f8]">
-              <h2 className="text-sm font-600 text-[#0d1530]" style={{ fontWeight: 600 }}>Últimas transacciones</h2>
+          <div className="bg-white rounded-xl border border-[#D3EBE4] shadow-sm overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-[#E4F5F0]">
+              <h2 className="text-sm font-600 text-[#0F2B26]" style={{ fontWeight: 600 }}>Últimas transacciones</h2>
             </div>
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#f5f7fc] border-b border-[#dde2ef]">
+                <tr className="bg-[#F1FAF7] border-b border-[#D3EBE4]">
                   {["ID", "Fecha", "Producto", "Cant.", "Total", "Método", "Estado", "Acciones"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-600 text-[#8891b0] uppercase tracking-wider" style={{ fontWeight: 600 }}>{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-xs font-600 text-[#5F7F77] uppercase tracking-wider" style={{ fontWeight: 600 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#eef1f8]">
+              <tbody className="divide-y divide-[#E4F5F0]">
                 {!loading && ultimasVentas.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#8891b0]">
+                    <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
                       Aún no hay ventas registradas.
                     </td>
                   </tr>
                 )}
                 {ultimasVentas.map((v) => (
-                  <tr key={v.id} className={`hover:bg-[#f5f7fc] transition-colors ${v.anulada ? "opacity-50" : ""}`}>
-                    <td className="px-4 py-3 font-mono text-xs text-[#3554a5] font-600" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{v.id}</td>
-                    <td className="px-4 py-3 text-[#8891b0] text-xs">{new Date(v.fecha).toLocaleString("es-CL")}</td>
-                    <td className="px-4 py-3 font-500 text-[#0d1530]" style={{ fontWeight: 500 }}>{v.producto}</td>
-                    <td className="px-4 py-3 font-mono text-center text-[#4a5580]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v.cantidad}</td>
-                    <td className="px-4 py-3 font-mono font-600 text-[#0d1530]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>${v.total.toLocaleString("es-CL")}</td>
+                  <tr key={v.id} className={`hover:bg-[#F1FAF7] transition-colors ${v.anulada ? "opacity-50" : ""}`}>
+                    <td className="px-4 py-3 font-mono text-xs text-[#0B6B55] font-600" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{v.id}</td>
+                    <td className="px-4 py-3 text-[#5F7F77] text-xs">{new Date(v.fecha).toLocaleString("es-CL")}</td>
+                    <td className="px-4 py-3 font-500 text-[#0F2B26]" style={{ fontWeight: 500 }}>{v.producto}</td>
+                    <td className="px-4 py-3 font-mono text-center text-[#3E5F57]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v.cantidad}</td>
+                    <td className="px-4 py-3 font-mono font-600 text-[#0F2B26]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>${v.total.toLocaleString("es-CL")}</td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-600 ${v.metodo === "Efectivo" ? "bg-[#e8f8ef] text-[#1a7a4a]" : v.metodo === "Débito" ? "bg-[#f0f4fc] text-[#1e2d5a]" : "bg-[#fdf3e3] text-[#e67e22]"}`} style={{ fontWeight: 600 }}>{v.metodo}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-600 ${v.metodo === "Efectivo" ? "bg-[#e8f8ef] text-[#1a7a4a]" : v.metodo === "Débito" ? "bg-[#EAF8F3] text-[#0B6B55]" : "bg-[#fdf3e3] text-[#e67e22]"}`} style={{ fontWeight: 600 }}>{v.metodo}</span>
                     </td>
                     <td className="px-4 py-3">
                       {v.anulada ? (
@@ -391,15 +390,15 @@ export default function VentasPage() {
           </div>
         </>
       ) : (
-        <div className="bg-white rounded-xl border border-[#dde2ef] shadow-sm p-6 max-w-lg">
-          <h2 className="font-700 text-[#0d1530] mb-5" style={{ fontWeight: 700 }}>Registrar nueva venta</h2>
+        <div className="bg-white rounded-xl border border-[#D3EBE4] shadow-sm p-6 max-w-lg">
+          <h2 className="font-700 text-[#0F2B26] mb-5" style={{ fontWeight: 700 }}>Registrar nueva venta</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Producto</label>
+              <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Producto</label>
               <select
                 value={productoId}
                 onChange={(e) => setProductoId(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] cursor-pointer"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
               >
                 <option value="">Selecciona un producto...</option>
                 {productos.map((p) => (
@@ -409,26 +408,26 @@ export default function VentasPage() {
                 ))}
               </select>
               {productoSeleccionado && (
-                <p className="text-xs text-[#8891b0] mt-1.5">
+                <p className="text-xs text-[#5F7F77] mt-1.5">
                   Precio de venta: ${productoSeleccionado.precioVenta.toLocaleString("es-CL")} · Stock disponible: {productoSeleccionado.stock}
                 </p>
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Cantidad</label>
+                <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Cantidad</label>
                 <input type="number" value={cantidad} onChange={(e) => setCantidad(e.target.value)} min="1"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
               </div>
               <div>
-                <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Método de pago</label>
-                <select value={metodo} onChange={(e) => setMetodo(e.target.value)} className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] cursor-pointer">
+                <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Método de pago</label>
+                <select value={metodo} onChange={(e) => setMetodo(e.target.value)} className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer">
                   <option>Efectivo</option><option>Débito</option><option>Crédito</option>
                 </select>
               </div>
             </div>
             {productoSeleccionado && +cantidad > 0 && (
-              <p className="text-sm text-[#4a5580]">
+              <p className="text-sm text-[#3E5F57]">
                 Total: <span className="font-600" style={{ fontWeight: 600 }}>${(productoSeleccionado.precioVenta * +cantidad).toLocaleString("es-CL")}</span>
               </p>
             )}
@@ -436,7 +435,7 @@ export default function VentasPage() {
               <button onClick={() => { resetForm(); setView("lista"); }} className="flex-1 py-3 rounded-xl bg-[#fde8e6] text-[#c0392b] text-sm font-600 hover:bg-[#e74c3c] hover:text-white transition" style={{ fontWeight: 600 }}>
                 Cancelar
               </button>
-              <button onClick={handleRegistrar} disabled={saving} className="flex-1 py-3 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm font-600 transition disabled:opacity-50" style={{ fontWeight: 600 }}>
+              <button onClick={handleRegistrar} disabled={saving} className="flex-1 py-3 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm font-600 transition disabled:opacity-50" style={{ fontWeight: 600 }}>
                 {saving ? "Registrando..." : "Registrar venta"}
               </button>
             </div>

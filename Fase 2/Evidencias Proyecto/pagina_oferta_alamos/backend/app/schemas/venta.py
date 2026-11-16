@@ -9,7 +9,7 @@ from app.schemas.producto import ProductoOut
 
 class VentaBase(BaseModel):
     producto_id: int
-    cantidad: int = Field(gt=0)  # no tiene sentido una venta de 0 o negativa
+    cantidad: int = Field(gt=0)  
     fecha: datetime
     metodo_pago: Optional[str] = None
 
@@ -39,4 +39,5 @@ class VentaCSVResumen(BaseModel):
     """Respuesta al importar un archivo CSV (HU-07)."""
     filas_procesadas: int
     ventas_importadas: int
+    ventas_duplicadas: int = 0 
     errores: list[str] = []

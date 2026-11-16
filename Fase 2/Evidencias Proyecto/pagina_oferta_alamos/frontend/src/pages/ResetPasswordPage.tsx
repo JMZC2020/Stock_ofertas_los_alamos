@@ -9,6 +9,7 @@ interface Props {
 }
 
 export default function ResetPasswordPage({ onBack, initialToken = null }: Props) {
+  
   const [step, setStep] = useState<1 | 2>(initialToken ? 2 : 1);
   const [enviado, setEnviado] = useState(false);
   const [email, setEmail] = useState("");
@@ -34,7 +35,7 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
       });
       if (!res.ok) throw new Error("No se pudo procesar la solicitud");
 
-      
+    
       setEnviado(true);
     } catch (err: any) {
       setError(err.message ?? "No se pudo conectar con el servidor");
@@ -82,29 +83,29 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f0f4fc]">
+    <div className="min-h-screen flex items-center justify-center bg-[#EAF8F3]">
       <div className="w-full max-w-md px-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
             onClick={onBack}
-            className="w-9 h-9 rounded-lg flex items-center justify-center border border-[#dde2ef] bg-white text-[#4a5580] hover:text-[#1e2d5a] hover:border-[#1e2d5a] transition"
+            className="w-9 h-9 rounded-lg flex items-center justify-center border border-[#D3EBE4] bg-white text-[#3E5F57] hover:text-[#0B6B55] hover:border-[#12A582] transition"
           >
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path d="M19 12H5M11 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <span className="font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Restablecer Contraseña</span>
+          <span className="font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Restablecer Contraseña</span>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-[#dde2ef] p-8">
+        <div className="bg-white rounded-2xl shadow-lg border border-[#D3EBE4] p-8">
           {/* Step indicator */}
           <div className="flex items-center gap-2 mb-6">
-            <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-700 ${step === 1 ? "bg-[#1e2d5a] text-white" : "bg-[#27ae60] text-white"}`} style={{ fontWeight: 700 }}>
+            <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-700 ${step === 1 ? "bg-[#7FF1D2] text-[#0F2B26]" : "bg-[#27ae60] text-[#0F2B26]"}`} style={{ fontWeight: 700 }}>
               {step === 1 ? "1" : "✓"}
             </div>
-            <div className={`h-0.5 flex-1 ${step === 2 ? "bg-[#1e2d5a]" : "bg-[#dde2ef]"}`} />
-            <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-700 ${step === 2 ? "bg-[#1e2d5a] text-white" : "bg-[#eef1f8] text-[#8891b0]"}`} style={{ fontWeight: 700 }}>
+            <div className={`h-0.5 flex-1 ${step === 2 ? "bg-[#7FF1D2]" : "bg-[#D3EBE4]"}`} />
+            <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-700 ${step === 2 ? "bg-[#7FF1D2] text-[#0F2B26]" : "bg-[#E4F5F0] text-[#5F7F77]"}`} style={{ fontWeight: 700 }}>
               2
             </div>
           </div>
@@ -123,17 +124,17 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
 
           {step === 1 && enviado ? (
             <>
-              <h2 className="text-lg font-700 text-[#0d1530] mb-1" style={{ fontWeight: 700 }}>Revisa tu correo</h2>
-              <p className="text-sm text-[#8891b0] mb-4 leading-relaxed">
+              <h2 className="text-lg font-700 text-[#0F2B26] mb-1" style={{ fontWeight: 700 }}>Revisa tu correo</h2>
+              <p className="text-sm text-[#5F7F77] mb-4 leading-relaxed">
                 Si <b>{email}</b> está registrado, te enviamos un enlace para restablecer tu contraseña.
                 Es válido por 1 hora y de un solo uso.
               </p>
-              <p className="text-xs text-[#8891b0] bg-[#f5f7fc] rounded-lg px-4 py-3 mb-6 leading-relaxed">
+              <p className="text-xs text-[#5F7F77] bg-[#F1FAF7] rounded-lg px-4 py-3 mb-6 leading-relaxed">
                 ¿No llegó? Revisa la carpeta de spam o vuelve a solicitarlo en unos minutos.
               </p>
               <button
                 onClick={onBack}
-                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white text-sm tracking-wide transition-all shadow-md"
+                className="w-full py-3.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm tracking-wide transition-all shadow-md"
                 style={{ fontWeight: 700 }}
               >
                 Volver al inicio de sesión
@@ -141,11 +142,11 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
             </>
           ) : step === 1 ? (
             <>
-              <h2 className="text-lg font-700 text-[#0d1530] mb-1" style={{ fontWeight: 700 }}>Verificar identidad</h2>
-              <p className="text-sm text-[#8891b0] mb-6">Ingrese su correo electrónico para recibir un enlace de restablecimiento.</p>
+              <h2 className="text-lg font-700 text-[#0F2B26] mb-1" style={{ fontWeight: 700 }}>Verificar identidad</h2>
+              <p className="text-sm text-[#5F7F77] mb-6">Ingrese su correo electrónico para recibir un enlace de restablecimiento.</p>
 
               <div className="mb-4">
-                <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>
+                <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
                   Correo electrónico
                 </label>
                 <input
@@ -153,18 +154,18 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
                   placeholder="ejemplo123@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#dde2ef] bg-[#f5f7fc] text-[#0d1530] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] transition"
+                  className="w-full px-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
                 />
               </div>
 
-              <p className="text-xs text-[#8891b0] bg-[#f5f7fc] rounded-lg px-4 py-3 mb-6 leading-relaxed">
+              <p className="text-xs text-[#5F7F77] bg-[#F1FAF7] rounded-lg px-4 py-3 mb-6 leading-relaxed">
                 Al presionar "Restablecer Contraseña" le enviaremos un correo con un link para restablecer su contraseña.
               </p>
 
               <button
                 onClick={handleSolicitar}
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white font-700 text-sm tracking-wide transition-all shadow-md disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] font-700 text-sm tracking-wide transition-all shadow-md disabled:opacity-50"
                 style={{ fontWeight: 700 }}
               >
                 {loading ? "Enviando..." : "Restablecer Contraseña"}
@@ -172,11 +173,11 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
             </>
           ) : (
             <>
-              <h2 className="text-lg font-700 text-[#0d1530] mb-1" style={{ fontWeight: 700 }}>Nueva contraseña</h2>
-              <p className="text-sm text-[#8891b0] mb-6">Ingrese y confirme su nueva contraseña.</p>
+              <h2 className="text-lg font-700 text-[#0F2B26] mb-1" style={{ fontWeight: 700 }}>Nueva contraseña</h2>
+              <p className="text-sm text-[#5F7F77] mb-6">Ingrese y confirme su nueva contraseña.</p>
 
               <div className="mb-4">
-                <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>
+                <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
                   Nueva contraseña
                 </label>
                 <input
@@ -184,12 +185,12 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
                   placeholder="••••••••••••••"
                   value={newPass}
                   onChange={(e) => setNewPass(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#dde2ef] bg-[#f5f7fc] text-[#0d1530] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] transition"
+                  className="w-full px-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
                 />
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>
+                <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
                   Confirmar contraseña
                 </label>
                 <input
@@ -197,14 +198,14 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
                   placeholder="••••••••••••••"
                   value={confirmPass}
                   onChange={(e) => setConfirmPass(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#dde2ef] bg-[#f5f7fc] text-[#0d1530] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] transition"
+                  className="w-full px-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
                 />
               </div>
 
               <button
                 onClick={handleActualizar}
                 disabled={loading || success}
-                className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] text-white font-700 text-sm tracking-wide transition-all shadow-md disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] font-700 text-sm tracking-wide transition-all shadow-md disabled:opacity-50"
                 style={{ fontWeight: 700 }}
               >
                 {loading ? "Actualizando..." : "Actualizar Contraseña"}
@@ -213,7 +214,7 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
           )}
         </div>
 
-        <p className="text-center text-xs text-[#8891b0] mt-6">
+        <p className="text-center text-xs text-[#5F7F77] mt-6">
           © 2024 Oferta de los Alamos · Sistema de gestión
         </p>
       </div>

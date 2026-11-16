@@ -29,7 +29,7 @@ type KpiCard = {
   alert?: boolean; warn?: boolean;
 };
 
-const COLORES_PAGO = ["#1e2d5a", "#3554a5", "#7a93d1", "#b9c6e6", "#d9731a"];
+const COLORES_PAGO = ["#0B5A47", "#12A582", "#5EE3BE", "#B5EBDD", "#d9731a"];
 
 const clp = (v: number) => `$${Math.round(v).toLocaleString("es-CL")}`;
 const clpCorto = (v: number) =>
@@ -44,7 +44,7 @@ const fechaCorta = (iso: string) => {
 };
 
 const EmptyState = ({ text }: { text: string }) => (
-  <div className="flex items-center justify-center h-full min-h-[120px] text-sm text-[#8891b0] text-center px-4">
+  <div className="flex items-center justify-center h-full min-h-[120px] text-sm text-[#5F7F77] text-center px-4">
     {text}
   </div>
 );
@@ -55,15 +55,15 @@ function construirKpis(k: DashboardData["kpis"]): KpiCard[] {
       label: "Productos activos",
       value: num(k.productos_activos),
       sub: "En el catálogo",
-      color: "bg-white", textColor: "text-[#0d1530]", subColor: "text-[#8891b0]",
+      color: "bg-white", textColor: "text-[#0F2B26]", subColor: "text-[#5F7F77]",
     },
     {
       label: "Stock crítico",
       value: num(k.stock_critico),
       sub: k.stock_critico > 0 ? `${num(k.sin_stock)} sin stock` : "Todo en orden",
-      color: k.stock_critico > 0 ? "bg-[#c0392b]" : "bg-white",
-      textColor: k.stock_critico > 0 ? "text-white" : "text-[#0d1530]",
-      subColor: k.stock_critico > 0 ? "text-red-100" : "text-[#8891b0]",
+      color: k.stock_critico > 0 ? "bg-[#d32f2f]" : "bg-white",
+      textColor: k.stock_critico > 0 ? "text-white" : "text-[#0F2B26]",
+      subColor: k.stock_critico > 0 ? "text-red-100" : "text-[#5F7F77]",
       alert: k.stock_critico > 0,
     },
     {
@@ -71,15 +71,15 @@ function construirKpis(k: DashboardData["kpis"]): KpiCard[] {
       value: num(k.por_vencer),
       sub: k.por_vencer > 0 ? `${num(k.vencidos)} ${k.vencidos === 1 ? "ya vencido" : "ya vencidos"}` : "Sin vencimientos cercanos",
       color: k.por_vencer > 0 ? "bg-[#d9731a]" : "bg-white",
-      textColor: k.por_vencer > 0 ? "text-white" : "text-[#0d1530]",
-      subColor: k.por_vencer > 0 ? "text-orange-100" : "text-[#8891b0]",
+      textColor: k.por_vencer > 0 ? "text-white" : "text-[#0F2B26]",
+      subColor: k.por_vencer > 0 ? "text-orange-100" : "text-[#5F7F77]",
       warn: k.por_vencer > 0,
     },
     {
       label: "Ventas del mes",
       value: clp(k.ventas_mes_total),
       sub: `${num(k.ventas_mes_unidades)} unidades vendidas`,
-      color: "bg-[#1e2d5a]", textColor: "text-white", subColor: "text-[#a8bde8]",
+      color: "bg-[#7FF1D2]", textColor: "text-[#0F2B26]", subColor: "text-[#1F5C4E]",
     },
   ];
 }
@@ -116,8 +116,8 @@ export default function DashboardPage() {
       {/* Título */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Dashboard Principal</h1>
-          <p className="text-sm text-[#8891b0] mt-0.5">
+          <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Dashboard Principal</h1>
+          <p className="text-sm text-[#5F7F77] mt-0.5">
             Resumen del sistema
             {actualizado && ` · actualizado ${actualizado.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}`}
           </p>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
         <button
           onClick={cargar}
           disabled={loading}
-          className="px-3 py-1.5 text-xs rounded-lg border border-[#dde2ef] text-[#4a5580] bg-white hover:bg-[#f4f6fb] disabled:opacity-50"
+          className="px-3 py-1.5 text-xs rounded-lg border border-[#D3EBE4] text-[#3E5F57] bg-white hover:bg-[#F4FBF8] disabled:opacity-50"
         >
           {loading ? "Actualizando…" : "Actualizar"}
         </button>
@@ -138,14 +138,14 @@ export default function DashboardPage() {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {!data && (
-          <div className="col-span-2 lg:col-span-4 bg-white rounded-xl p-5 shadow-sm border border-[#dde2ef]">
+          <div className="col-span-2 lg:col-span-4 bg-white rounded-xl p-5 shadow-sm border border-[#D3EBE4]">
             <EmptyState text={loading ? "Cargando datos…" : "No se pudieron cargar los datos del dashboard."} />
           </div>
         )}
         {kpiCards.map((k) => (
-          <div key={k.label} className={`rounded-xl p-5 shadow-sm border border-[#dde2ef] ${k.color}`}>
+          <div key={k.label} className={`rounded-xl p-5 shadow-sm border border-[#D3EBE4] ${k.color}`}>
             <p
-              className={`text-xs font-500 uppercase tracking-wider mb-2 ${k.alert ? "text-red-200" : k.warn ? "text-orange-200" : k.color === "bg-white" ? "text-[#8891b0]" : "text-[#a8bde8]"}`}
+              className={`text-xs font-500 uppercase tracking-wider mb-2 ${k.alert ? "text-red-200" : k.warn ? "text-orange-200" : k.color === "bg-white" ? "text-[#5F7F77]" : "text-[#1F5C4E]"}`}
               style={{ fontWeight: 500 }}
             >
               {k.label}
@@ -165,11 +165,11 @@ export default function DashboardPage() {
         <>
           {/* Tendencia + métodos de pago */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2 bg-white rounded-xl p-5 shadow-sm border border-[#dde2ef]">
+            <div className="lg:col-span-2 bg-white rounded-xl p-5 shadow-sm border border-[#D3EBE4]">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-sm font-600 text-[#0d1530]" style={{ fontWeight: 600 }}>Tendencia de ventas diarias</h2>
-                  <p className="text-xs text-[#8891b0]">Últimos 30 días</p>
+                  <h2 className="text-sm font-600 text-[#0F2B26]" style={{ fontWeight: 600 }}>Tendencia de ventas diarias</h2>
+                  <p className="text-xs text-[#5F7F77]">Últimos 30 días</p>
                 </div>
                 {variacion !== null && (
                   <span
@@ -186,26 +186,26 @@ export default function DashboardPage() {
               ) : (
                 <ResponsiveContainer width="100%" height={220}>
                   <LineChart data={data.ventas_diarias} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eef1f8" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E4F5F0" vertical={false} />
                     <XAxis
                       dataKey="fecha" tickFormatter={fechaCorta} interval={4}
-                      tick={{ fontSize: 11, fill: "#8891b0" }} axisLine={false} tickLine={false}
+                      tick={{ fontSize: 11, fill: "#5F7F77" }} axisLine={false} tickLine={false}
                     />
-                    <YAxis tickFormatter={clpCorto} tick={{ fontSize: 11, fill: "#8891b0" }} axisLine={false} tickLine={false} width={48} />
+                    <YAxis tickFormatter={clpCorto} tick={{ fontSize: 11, fill: "#5F7F77" }} axisLine={false} tickLine={false} width={48} />
                     <Tooltip
                       labelFormatter={(l) => fechaCorta(String(l))}
                       formatter={(v) => [clp(Number(v)), "Ventas"]}
-                      contentStyle={{ borderRadius: 8, border: "1px solid #dde2ef", fontSize: 12 }}
+                      contentStyle={{ borderRadius: 8, border: "1px solid #D3EBE4", fontSize: 12 }}
                     />
-                    <Line type="monotone" dataKey="total" stroke="#1e2d5a" strokeWidth={2.5} dot={{ r: 3, fill: "#1e2d5a", strokeWidth: 0 }} activeDot={{ r: 6, fill: "#3554a5" }} />
+                    <Line type="monotone" dataKey="total" stroke="#12A582" strokeWidth={2.5} dot={{ r: 3, fill: "#12A582", strokeWidth: 0 }} activeDot={{ r: 6, fill: "#0B5A47" }} />
                   </LineChart>
                 </ResponsiveContainer>
               )}
             </div>
 
-            <div className="bg-white rounded-xl p-5 shadow-sm border border-[#dde2ef]">
-              <h2 className="text-sm font-600 text-[#0d1530] mb-1" style={{ fontWeight: 600 }}>Ventas por método de pago</h2>
-              <p className="text-xs text-[#8891b0] mb-3">Últimos 30 días</p>
+            <div className="bg-white rounded-xl p-5 shadow-sm border border-[#D3EBE4]">
+              <h2 className="text-sm font-600 text-[#0F2B26] mb-1" style={{ fontWeight: 600 }}>Ventas por método de pago</h2>
+              <p className="text-xs text-[#5F7F77] mb-3">Últimos 30 días</p>
               {data.metodos_pago.length === 0 ? (
                 <div style={{ height: 160 }}><EmptyState text="Sin ventas para mostrar." /></div>
               ) : (
@@ -216,7 +216,7 @@ export default function DashboardPage() {
                         <Cell key={i} fill={COLORES_PAGO[i % COLORES_PAGO.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v) => [clp(Number(v)), ""]} contentStyle={{ borderRadius: 8, border: "1px solid #dde2ef", fontSize: 12 }} />
+                    <Tooltip formatter={(v) => [clp(Number(v)), ""]} contentStyle={{ borderRadius: 8, border: "1px solid #D3EBE4", fontSize: 12 }} />
                   </PieChart>
                 </ResponsiveContainer>
               )}
@@ -225,9 +225,9 @@ export default function DashboardPage() {
                   <div key={m.metodo} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: COLORES_PAGO[i % COLORES_PAGO.length] }} />
-                      <span className="text-[#4a5580]">{m.metodo}</span>
+                      <span className="text-[#3E5F57]">{m.metodo}</span>
                     </div>
-                    <span className="font-600 text-[#0d1530]" style={{ fontWeight: 600 }}>{m.porcentaje.toLocaleString("es-CL")}%</span>
+                    <span className="font-600 text-[#0F2B26]" style={{ fontWeight: 600 }}>{m.porcentaje.toLocaleString("es-CL")}%</span>
                   </div>
                 ))}
               </div>
@@ -235,28 +235,28 @@ export default function DashboardPage() {
           </div>
 
           {/* Top 10 */}
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-[#dde2ef]">
+          <div className="bg-white rounded-xl p-5 shadow-sm border border-[#D3EBE4]">
             <div className="mb-4">
-              <h2 className="text-sm font-600 text-[#0d1530]" style={{ fontWeight: 600 }}>Top 10 productos más vendidos</h2>
-              <p className="text-xs text-[#8891b0]">Unidades vendidas · últimos 30 días</p>
+              <h2 className="text-sm font-600 text-[#0F2B26]" style={{ fontWeight: 600 }}>Top 10 productos más vendidos</h2>
+              <p className="text-xs text-[#5F7F77]">Unidades vendidas · últimos 30 días</p>
             </div>
             {data.top_productos.length === 0 ? (
               <div style={{ height: 220 }}><EmptyState text="Aún no hay ventas registradas para mostrar un ranking." /></div>
             ) : (
               <ResponsiveContainer width="100%" height={Math.max(220, data.top_productos.length * 32)}>
                 <BarChart data={data.top_productos} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#eef1f8" horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 11, fill: "#8891b0" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E4F5F0" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 11, fill: "#5F7F77" }} axisLine={false} tickLine={false} allowDecimals={false} />
                   <YAxis
                     type="category" dataKey="producto" width={230}
                     tickFormatter={(s: string) => (s.length > 34 ? s.slice(0, 33) + "…" : s)}
-                    tick={{ fontSize: 11, fill: "#4a5580" }} axisLine={false} tickLine={false}
+                    tick={{ fontSize: 11, fill: "#3E5F57" }} axisLine={false} tickLine={false}
                   />
                   <Tooltip
                     formatter={(v, _n, item: any) => [`${num(Number(v))} unidades · ${clp(item.payload.total)}`, ""]}
-                    contentStyle={{ borderRadius: 8, border: "1px solid #dde2ef", fontSize: 12 }}
+                    contentStyle={{ borderRadius: 8, border: "1px solid #D3EBE4", fontSize: 12 }}
                   />
-                  <Bar dataKey="unidades" fill="#1e2d5a" radius={[0, 4, 4, 0]} barSize={14} />
+                  <Bar dataKey="unidades" fill="#12A582" radius={[0, 4, 4, 0]} barSize={14} />
                 </BarChart>
               </ResponsiveContainer>
             )}

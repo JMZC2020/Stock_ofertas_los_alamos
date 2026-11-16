@@ -64,10 +64,10 @@ function procesarImagen(archivo: File): Promise<string> {
 
 function Avatar({ perfil, tam }: { perfil: Perfil | null; tam: string }) {
   if (perfil?.foto) {
-    return <img src={perfil.foto} alt="Foto de perfil" className={`${tam} rounded-full object-cover bg-[#3554a5]`} />;
+    return <img src={perfil.foto} alt="Foto de perfil" className={`${tam} rounded-full object-cover bg-[#0F2B26]`} />;
   }
   return (
-    <div className={`${tam} rounded-full bg-[#3554a5] flex items-center justify-center text-white`} style={{ fontWeight: 700, fontSize: "0.75em" }}>
+    <div className={`${tam} rounded-full bg-[#0F2B26] flex items-center justify-center text-[#7FF1D2]`} style={{ fontWeight: 700, fontSize: "0.75em" }}>
       {perfil ? iniciales(perfil.nombre, perfil.email) : "…"}
     </div>
   );
@@ -80,6 +80,7 @@ export default function UserMenu({ onLogout }: Props) {
   const [editando, setEditando] = useState(false);
   const contenedor = useRef<HTMLDivElement>(null);
 
+  
   const [nombre, setNombre] = useState("");
   const [foto, setFoto] = useState<string | null>(null);
   const [fotoCambio, setFotoCambio] = useState(false); 
@@ -183,29 +184,29 @@ export default function UserMenu({ onLogout }: Props) {
       <div className="relative" ref={contenedor}>
         <button
           onClick={() => setMenu(!menu)}
-          className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-white/10 transition"
+          className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-[#0F2B26]/10 transition"
           aria-expanded={menu}
           aria-label="Menú de usuario"
         >
           <Avatar perfil={perfil} tam="w-8 h-8 text-sm" />
-          <span className="text-[#a8bde8] text-sm hidden sm:block">
+          <span className="text-[#0F2B26] text-sm hidden sm:block">
             {perfil ? nombreCorto(perfil.nombre) : errorCarga ? "Usuario" : ""}
           </span>
         </button>
 
         {menu && (
-          <div className="absolute right-0 top-11 w-64 bg-white rounded-xl shadow-xl border border-[#dde2ef] z-50 overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-4 border-b border-[#eef1f8]">
+          <div className="absolute right-0 top-11 w-64 bg-white rounded-xl shadow-xl border border-[#D3EBE4] z-50 overflow-hidden">
+            <div className="flex items-center gap-3 px-4 py-4 border-b border-[#E4F5F0]">
               <Avatar perfil={perfil} tam="w-11 h-11 text-base" />
               <div className="min-w-0">
-                <p className="text-sm text-[#0d1530] truncate" style={{ fontWeight: 600 }}>{perfil?.nombre ?? "Usuario"}</p>
-                <p className="text-xs text-[#8891b0] truncate">{perfil?.email ?? ""}</p>
+                <p className="text-sm text-[#0F2B26] truncate" style={{ fontWeight: 600 }}>{perfil?.nombre ?? "Usuario"}</p>
+                <p className="text-xs text-[#5F7F77] truncate">{perfil?.email ?? ""}</p>
               </div>
             </div>
-            <button onClick={abrirEdicion} disabled={!perfil} className="w-full text-left px-4 py-3 text-sm text-[#4a5580] hover:bg-[#f5f7fc] disabled:opacity-50">
+            <button onClick={abrirEdicion} disabled={!perfil} className="w-full text-left px-4 py-3 text-sm text-[#3E5F57] hover:bg-[#F1FAF7] disabled:opacity-50">
               Editar perfil
             </button>
-            <button onClick={() => { setMenu(false); onLogout(); }} className="w-full text-left px-4 py-3 text-sm text-[#c0392b] hover:bg-[#fde8e6] border-t border-[#eef1f8]">
+            <button onClick={() => { setMenu(false); onLogout(); }} className="w-full text-left px-4 py-3 text-sm text-[#c0392b] hover:bg-[#fde8e6] border-t border-[#E4F5F0]">
               Cerrar sesión
             </button>
           </div>
@@ -214,10 +215,10 @@ export default function UserMenu({ onLogout }: Props) {
 
       {editando && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-[#dde2ef] w-full max-w-sm p-6">
+          <div className="bg-white rounded-2xl shadow-2xl border border-[#D3EBE4] w-full max-w-sm p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-[#0d1530]" style={{ fontWeight: 700 }}>Editar perfil</h2>
-              <button onClick={() => setEditando(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8891b0] hover:bg-[#eef1f8] transition" aria-label="Cerrar">
+              <h2 className="text-[#0F2B26]" style={{ fontWeight: 700 }}>Editar perfil</h2>
+              <button onClick={() => setEditando(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:bg-[#E4F5F0] transition" aria-label="Cerrar">
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" /></svg>
               </button>
             </div>
@@ -227,7 +228,7 @@ export default function UserMenu({ onLogout }: Props) {
             <div className="flex items-center gap-4 mb-5">
               <Avatar perfil={vistaPrevia} tam="w-16 h-16 text-xl" />
               <div className="flex flex-col gap-2">
-                <label className="px-3 py-2 rounded-lg text-xs border border-[#dde2ef] text-[#4a5580] hover:border-[#3554a5] cursor-pointer text-center" style={{ fontWeight: 600 }}>
+                <label className="px-3 py-2 rounded-lg text-xs border border-[#D3EBE4] text-[#3E5F57] hover:border-[#12A582] cursor-pointer text-center" style={{ fontWeight: 600 }}>
                   Subir foto
                   <input type="file" accept="image/jpeg,image/png,image/webp" onChange={elegirArchivo} className="hidden" />
                 </label>
@@ -240,20 +241,20 @@ export default function UserMenu({ onLogout }: Props) {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Nombre</label>
+              <label className="block text-sm text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Nombre</label>
               <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={100}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#f5f7fc] text-sm focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5]" />
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
             </div>
             <div className="mb-5">
-              <label className="block text-sm text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>Correo</label>
+              <label className="block text-sm text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Correo</label>
               <input type="text" value={perfil?.email ?? ""} disabled
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[#dde2ef] bg-[#eef1f8] text-sm text-[#8891b0]" />
-              <p className="text-xs text-[#8891b0] mt-1">El correo no se puede cambiar: se usa para recuperar tu contraseña.</p>
+                className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#E4F5F0] text-sm text-[#5F7F77]" />
+              <p className="text-xs text-[#5F7F77] mt-1">El correo no se puede cambiar: se usa para recuperar tu contraseña.</p>
             </div>
 
             <div className="flex gap-3">
               <button onClick={() => setEditando(false)} className="flex-1 py-3 rounded-xl bg-[#fde8e6] text-[#c0392b] text-sm hover:bg-[#e74c3c] hover:text-white transition" style={{ fontWeight: 600 }}>Cancelar</button>
-              <button onClick={guardar} disabled={guardando} className="flex-1 py-3 rounded-xl bg-[#1e2d5a] text-white text-sm hover:bg-[#152045] transition disabled:opacity-50" style={{ fontWeight: 600 }}>
+              <button onClick={guardar} disabled={guardando} className="flex-1 py-3 rounded-xl bg-[#7FF1D2] text-[#0F2B26] text-sm hover:bg-[#5EE3BE] transition disabled:opacity-50" style={{ fontWeight: 600 }}>
                 {guardando ? "Guardando..." : "Guardar"}
               </button>
             </div>

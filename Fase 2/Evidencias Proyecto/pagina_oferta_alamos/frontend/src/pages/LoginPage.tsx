@@ -47,23 +47,23 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f0f4fc]">
+    <div className="min-h-screen flex items-center justify-center bg-[#EAF8F3]">
       <div className="w-full max-w-md px-6">
         {/* Brand */}
         <div className="flex items-center justify-center mb-10">
           <div className="text-center">
-            <h1 className="text-2xl font-800 text-[#0d1530] leading-tight" style={{ fontWeight: 800 }}>
+            <h1 className="text-2xl font-800 text-[#0F2B26] leading-tight" style={{ fontWeight: 800 }}>
               Oferta de los
             </h1>
-            <h1 className="text-2xl font-800 text-[#1e2d5a] leading-tight" style={{ fontWeight: 800 }}>
+            <h1 className="text-2xl font-800 text-[#0B6B55] leading-tight" style={{ fontWeight: 800 }}>
               Alamos
             </h1>
           </div>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-[#dde2ef] p-8">
-          <p className="text-sm font-600 text-[#4a5580] uppercase tracking-widest mb-6 text-center" style={{ fontWeight: 600 }}>
+        <div className="bg-white rounded-2xl shadow-lg border border-[#D3EBE4] p-8">
+          <p className="text-sm font-600 text-[#3E5F57] uppercase tracking-widest mb-6 text-center" style={{ fontWeight: 600 }}>
             Iniciar sesión
           </p>
 
@@ -75,11 +75,11 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
 
           {/* Email */}
           <div className="mb-4">
-            <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>
+            <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
               Correo electrónico
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8891b0]">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5F7F77]">
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="8" r="4" />
                   <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
@@ -90,7 +90,7 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#dde2ef] bg-[#f5f7fc] text-[#0d1530] text-sm font-500 focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] transition"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm font-500 focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
                 style={{ fontWeight: 500 }}
               />
             </div>
@@ -98,11 +98,11 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
 
           {/* Password */}
           <div className="mb-6">
-            <label className="block text-sm font-500 text-[#4a5580] mb-1.5" style={{ fontWeight: 500 }}>
+            <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
               Contraseña
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8891b0]">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5F7F77]">
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <rect x="5" y="11" width="14" height="10" rx="2" />
                   <path d="M8 11V7a4 4 0 0 1 8 0v4" />
@@ -113,7 +113,7 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
                 value={pass}
                 onChange={(e) => setPass(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#dde2ef] bg-[#f5f7fc] text-[#0d1530] text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-[#3554a5]/30 focus:border-[#3554a5] transition"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-[#1e2d5a] hover:bg-[#152045] active:bg-[#0d1530] text-white font-700 text-sm tracking-wide transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] active:bg-[#5EE3BE] text-[#0F2B26] font-700 text-sm tracking-wide transition-all shadow-md hover:shadow-lg disabled:opacity-50"
             style={{ fontWeight: 700 }}
           >
             {loading ? "Ingresando..." : "Iniciar sesión"}
@@ -132,7 +132,7 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
           <div className="mt-5 text-center">
             <button
               onClick={onForgotPassword}
-              className="text-sm text-[#3554a5] hover:text-[#1e2d5a] font-500 transition-colors"
+              className="text-sm text-[#0B6B55] hover:text-[#0B6B55] font-500 transition-colors"
               style={{ fontWeight: 500 }}
             >
               ¿Olvidó su contraseña?
@@ -140,7 +140,7 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
           </div>
         </div>
 
-        <p className="text-center text-xs text-[#8891b0] mt-6">
+        <p className="text-center text-xs text-[#5F7F77] mt-6">
           © 2024 Oferta de los Alamos · Sistema de gestión
         </p>
       </div>

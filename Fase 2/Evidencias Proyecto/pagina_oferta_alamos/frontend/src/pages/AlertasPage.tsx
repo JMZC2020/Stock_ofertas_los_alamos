@@ -25,8 +25,8 @@ function mapFromApi(a: any): Alerta {
 }
 
 const prioridadConfig = {
-  critica: { label: "Crítica", bg: "bg-[#fde8e6]", border: "border-[#e74c3c]/30", text: "text-[#c0392b]", badge: "bg-[#c0392b] text-white" },
-  alta: { label: "Alta", bg: "bg-[#fde8e6]", border: "border-[#e74c3c]/20", text: "text-[#c0392b]", badge: "bg-[#e74c3c] text-white" },
+  critica: { label: "Crítica", bg: "bg-[#fdecea]", border: "border-[#d32f2f]/40 border-l-4 border-l-[#c62828]", text: "text-[#c62828]", badge: "bg-[#c62828] text-white" },
+  alta: { label: "Alta", bg: "bg-[#fdecea]", border: "border-[#e53935]/30 border-l-4 border-l-[#e53935]", text: "text-[#d32f2f]", badge: "bg-[#e53935] text-white" },
   media: { label: "Media", bg: "bg-[#fdf3e3]", border: "border-[#e67e22]/20", text: "text-[#e67e22]", badge: "bg-[#e67e22] text-white" },
 };
 
@@ -49,11 +49,11 @@ function AlertaCard({ a }: { a: Alerta }) {
       <div className={`mt-0.5 ${cfg.text} shrink-0`}>{tipoIcon(a.tipo)}</div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap mb-0.5">
-          <p className="font-600 text-[#0d1530] text-sm" style={{ fontWeight: 600 }}>{a.producto}</p>
+          <p className="font-600 text-[#0F2B26] text-sm" style={{ fontWeight: 600 }}>{a.producto}</p>
           <span className={`px-2 py-0.5 rounded-full text-[10px] font-700 ${cfg.badge}`} style={{ fontWeight: 700 }}>{cfg.label}</span>
         </div>
-        <p className="text-xs text-[#4a5580]">{a.detalle}</p>
-        <p className="text-[11px] text-[#8891b0] mt-1">{a.fecha}</p>
+        <p className="text-xs text-[#3E5F57]">{a.detalle}</p>
+        <p className="text-[11px] text-[#5F7F77] mt-1">{a.fecha}</p>
       </div>
     </div>
   );
@@ -112,8 +112,8 @@ export default function AlertasPage() {
   return (
     <div className="p-6 space-y-5">
       <div>
-        <h1 className="text-xl font-700 text-[#0d1530]" style={{ fontWeight: 700 }}>Centro de Alertas</h1>
-        <p className="text-sm text-[#8891b0] mt-0.5">
+        <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Centro de Alertas</h1>
+        <p className="text-sm text-[#5F7F77] mt-0.5">
           {loading ? "Cargando..." : `${alertas.length} alertas activas requieren atención`}
         </p>
       </div>
@@ -127,12 +127,20 @@ export default function AlertasPage() {
       {/* Summary row */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Stock crítico / bajo", count: stockCount, color: "text-[#c0392b]", bg: "bg-[#fde8e6]" },
-          { label: "Por vencer", count: vencimientoCount, color: "text-[#e67e22]", bg: "bg-[#fdf3e3]" },
-          { label: "Urgentes (crítica)", count: urgentesCount, color: "text-[#1a7a4a]", bg: "bg-[#e8f8ef]" },
+          { label: "Stock crítico / bajo", count: stockCount, color: "text-white", bg: "bg-[#d32f2f] shadow-md", labelColor: "text-red-100", peligro: true },
+          { label: "Por vencer", count: vencimientoCount, color: "text-[#e67e22]", bg: "bg-[#fdf3e3]", labelColor: "text-[#3E5F57]", peligro: false },
+          { label: "Urgentes (crítica)", count: urgentesCount, color: "text-[#1a7a4a]", bg: "bg-[#e8f8ef]", labelColor: "text-[#3E5F57]", peligro: false },
         ].map((s) => (
           <div key={s.label} className={`${s.bg} rounded-xl p-4 border border-transparent`}>
-            <p className="text-xs font-500 text-[#4a5580] uppercase tracking-wider mb-1" style={{ fontWeight: 500 }}>{s.label}</p>
+            <p className={`text-xs font-500 ${s.labelColor} uppercase tracking-wider mb-1 flex items-center gap-1.5`} style={{ fontWeight: 500 }}>
+              {s.peligro && (
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              )}
+              {s.label}
+            </p>
             <p className={`text-3xl font-800 font-mono ${s.color}`} style={{ fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>{s.count}</p>
           </div>
         ))}
@@ -147,10 +155,10 @@ export default function AlertasPage() {
             <button
               key={f.value}
               onClick={() => setFiltro(f.value)}
-              className={`px-3.5 py-2 rounded-xl text-sm font-600 transition ${activo ? "bg-[#1e2d5a] text-white shadow" : "bg-white text-[#4a5580] border border-[#dde2ef] hover:border-[#3554a5]"}`}
+              className={`px-3.5 py-2 rounded-xl text-sm font-600 transition ${activo ? "bg-[#7FF1D2] text-[#0F2B26] shadow" : "bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582]"}`}
               style={{ fontWeight: 600 }}
             >
-              {f.label} <span className={activo ? "opacity-70" : "text-[#8891b0]"}>({count})</span>
+              {f.label} <span className={activo ? "opacity-70" : "text-[#5F7F77]"}>({count})</span>
             </button>
           );
         })}
@@ -158,15 +166,15 @@ export default function AlertasPage() {
 
       {/* Alerts list */}
       <div className="space-y-3">
-        <h2 className="text-sm font-600 text-[#0d1530] uppercase tracking-wider" style={{ fontWeight: 600 }}>Prioridad crítica y alta</h2>
+        <h2 className="text-sm font-600 text-[#0F2B26] uppercase tracking-wider" style={{ fontWeight: 600 }}>Prioridad crítica y alta</h2>
         {!loading && criticas.length === 0 && (
-          <p className="text-sm text-[#8891b0] py-2">No hay alertas de prioridad crítica o alta por el momento.</p>
+          <p className="text-sm text-[#5F7F77] py-2">No hay alertas de prioridad crítica o alta por el momento.</p>
         )}
         {criticas.map((a) => <AlertaCard key={a.id} a={a} />)}
 
-        <h2 className="text-sm font-600 text-[#0d1530] uppercase tracking-wider pt-2" style={{ fontWeight: 600 }}>Prioridad media</h2>
+        <h2 className="text-sm font-600 text-[#0F2B26] uppercase tracking-wider pt-2" style={{ fontWeight: 600 }}>Prioridad media</h2>
         {!loading && medias.length === 0 && (
-          <p className="text-sm text-[#8891b0] py-2">No hay alertas de prioridad media por el momento.</p>
+          <p className="text-sm text-[#5F7F77] py-2">No hay alertas de prioridad media por el momento.</p>
         )}
         {medias.map((a) => <AlertaCard key={a.id} a={a} />)}
       </div>

@@ -97,18 +97,18 @@ export default function DashboardLayout({ onLogout }: Props) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f0f4fc]">
+    <div className="flex h-screen overflow-hidden bg-[#EAF8F3]">
       {/* Sidebar */}
       <aside
-        className={`flex flex-col bg-[#0d1530] transition-all duration-300 ${sidebarOpen ? "w-56" : "w-16"} shrink-0`}
+        className={`flex flex-col bg-[#7FF1D2] transition-all duration-300 ${sidebarOpen ? "w-56" : "w-16"} shrink-0`}
         style={{ zIndex: 20 }}
       >
         {/* Brand area */}
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
+        <div className="flex items-center gap-3 px-4 py-5 border-b border-[#0F2B26]/10">
           {sidebarOpen && (
             <div className="overflow-hidden">
-              <div className="text-white font-700 text-sm leading-tight truncate" style={{ fontWeight: 700 }}>Oferta de los</div>
-              <div className="text-[#a8bde8] text-xs truncate">Alamos</div>
+              <div className="text-[#0F2B26] font-700 text-sm leading-tight truncate" style={{ fontWeight: 700 }}>Oferta de los</div>
+              <div className="text-[#1F5C4E] text-xs truncate">Alamos</div>
             </div>
           )}
         </div>
@@ -121,12 +121,12 @@ export default function DashboardLayout({ onLogout }: Props) {
               onClick={() => setActive(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all group relative ${
                 active === item.id
-                  ? "bg-[#3554a5]/30 text-white"
-                  : "text-[#a8bde8] hover:bg-white/5 hover:text-white"
+                  ? "bg-[#0F2B26]/10 text-[#0F2B26]"
+                  : "text-[#1F5C4E] hover:bg-[#0F2B26]/5 hover:text-[#0F2B26]"
               }`}
             >
               {active === item.id && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r bg-[#4a6bbf]" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r bg-[#0F2B26]" />
               )}
               <span className="shrink-0">{item.icon}</span>
               {sidebarOpen && (
@@ -138,11 +138,11 @@ export default function DashboardLayout({ onLogout }: Props) {
 
         {/* Footer */}
         {sidebarOpen && (
-          <div className="px-4 py-4 border-t border-white/10">
-            <div className="flex gap-3 text-xs text-[#a8bde8]/60">
-              <button className="hover:text-[#a8bde8] transition">Contacto</button>
+          <div className="px-4 py-4 border-t border-[#0F2B26]/10">
+            <div className="flex gap-3 text-xs text-[#1F5C4E]/60">
+              <button className="hover:text-[#1F5C4E] transition">Contacto</button>
               <span>·</span>
-              <button className="hover:text-[#a8bde8] transition">Redes</button>
+              <button className="hover:text-[#1F5C4E] transition">Redes</button>
             </div>
           </div>
         )}
@@ -151,17 +151,17 @@ export default function DashboardLayout({ onLogout }: Props) {
       {/* Main */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Topbar */}
-        <header className="flex items-center justify-between px-5 h-14 bg-[#152045] border-b border-white/10 shrink-0">
+        <header className="flex items-center justify-between px-5 h-14 bg-[#7FF1D2] border-b border-[#0F2B26]/10 shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#a8bde8] hover:text-white hover:bg-white/10 transition"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#1F5C4E] hover:text-[#0F2B26] hover:bg-[#0F2B26]/10 transition"
             >
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
               </svg>
             </button>
-            <span className="text-white font-600 text-sm" style={{ fontWeight: 600 }}>
+            <span className="text-[#0F2B26] font-600 text-sm" style={{ fontWeight: 600 }}>
               Oferta de los Alamos
             </span>
           </div>
@@ -175,7 +175,7 @@ export default function DashboardLayout({ onLogout }: Props) {
 
             <button
               onClick={onLogout}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#a8bde8] hover:text-[#e74c3c] hover:bg-white/10 transition"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#1F5C4E] hover:text-[#c62828] hover:bg-[#0F2B26]/10 transition"
               title="Cerrar sesión"
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
