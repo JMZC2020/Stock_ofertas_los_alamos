@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "/api";
 
 interface Perfil {
   id: number;

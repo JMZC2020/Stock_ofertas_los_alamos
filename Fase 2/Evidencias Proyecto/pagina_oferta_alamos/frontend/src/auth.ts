@@ -7,7 +7,7 @@
  * - Si el backend responde 401 (token vencido o inválido), borra la sesión y avisa a la app
  *   para volver al login.
  */
-const API_BASE = "http://localhost:8000";
+const API_BASE = "/api";
 const TOKEN_KEY = "access_token";
 export const SESSION_EXPIRED_EVENT = "auth:expired";
 

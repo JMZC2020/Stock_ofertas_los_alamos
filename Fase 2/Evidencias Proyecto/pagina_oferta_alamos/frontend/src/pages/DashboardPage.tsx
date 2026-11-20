@@ -4,7 +4,7 @@ import {
   LineChart, Line, PieChart, Pie, Cell,
 } from "recharts";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "/api";
 
 
 interface DashboardData {

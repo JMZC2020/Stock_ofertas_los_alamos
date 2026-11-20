@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DashboardLayout from "./pages/DashboardLayout";
+import AvisoInactividad from "./components/AvisoInactividad";
 import { SESSION_EXPIRED_EVENT, cerrarSesion, haySesionValida, instalarAuthFetch } from "./auth";
 
 type Screen = "login" | "reset-password" | "app";
+
+
+const MINUTOS_INACTIVIDAD = 15;
 
 
 instalarAuthFetch();
@@ -24,10 +28,12 @@ export default function App() {
   const [resetToken] = useState<string | null>(leerTokenDeReset);
   const [screen, setScreen] = useState<Screen>(() => {
     if (resetToken) return "reset-password";
+    
     return haySesionValida() ? "app" : "login";
   });
   const [avisoSesion, setAvisoSesion] = useState<string | null>(null);
 
+  
   useEffect(() => {
     const alExpirar = () => {
       setAvisoSesion("Tu sesión expiró. Inicia sesión nuevamente.");
@@ -40,6 +46,12 @@ export default function App() {
   const cerrar = () => {
     cerrarSesion();
     setAvisoSesion(null);
+    setScreen("login");
+  };
+
+  const cerrarPorInactividad = () => {
+    cerrarSesion();
+    setAvisoSesion("Cerramos tu sesión por inactividad. Inicia sesión nuevamente.");
     setScreen("login");
   };
 
@@ -66,5 +78,10 @@ export default function App() {
     return <ResetPasswordPage initialToken={resetToken} onBack={() => setScreen("login")} />;
   }
 
-  return <DashboardLayout onLogout={cerrar} />;
+  return (
+    <>
+      <DashboardLayout onLogout={cerrar} />
+      <AvisoInactividad activo minutosInactividad={MINUTOS_INACTIVIDAD} onExpirar={cerrarPorInactividad} />
+    </>
+  );
 }

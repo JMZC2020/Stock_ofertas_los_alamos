@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "/api";
 
 interface Product {
   id: number;
@@ -24,6 +24,34 @@ interface ProveedorOpcion {
 const PAGE_SIZE = 6;
 
 type ModalMode = null | "add" | "edit" | "view";
+
+type ClaseABC = "A" | "B" | "C";
+
+
+const ABC_ESTILO: Record<ClaseABC, string> = {
+  A: "bg-[#7FF1D2] text-[#0F2B26]",
+  B: "bg-[#E4F5F0] text-[#0B6B55]",
+  C: "bg-[#F1F3F2] text-[#5F7F77]",
+};
+const ABC_TEXTO: Record<ClaseABC, string> = {
+  A: "Clase A: aporta la mayor parte de los ingresos",
+  B: "Clase B: aporte intermedio",
+  C: "Clase C: aporte bajo",
+};
+
+
+function extraerClases(data: any): Record<number, ClaseABC> {
+  const lista: any[] = Array.isArray(data)
+    ? data
+    : Object.values(data ?? {}).find((v) => Array.isArray(v)) as any[] ?? [];
+  const mapa: Record<number, ClaseABC> = {};
+  for (const it of lista) {
+    const id = it?.producto_id ?? it?.id;
+    const clase = String(it?.clase ?? it?.clasificacion ?? "").toUpperCase();
+    if (id != null && (clase === "A" || clase === "B" || clase === "C")) mapa[Number(id)] = clase;
+  }
+  return mapa;
+}
 
 
 function mapFromApi(p: any): Product {
@@ -88,6 +116,8 @@ export default function ProductosPage() {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("");
   const [provFilter, setProvFilter] = useState("");
+  const [abcFilter, setAbcFilter] = useState<"" | ClaseABC | "SIN">("");
+  const [clases, setClases] = useState<Record<number, ClaseABC>>({});
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState<ModalMode>(null);
   const [selected, setSelected] = useState<Product | null>(null);
@@ -120,9 +150,21 @@ export default function ProductosPage() {
     }
   };
 
+
+  const cargarClases = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/clasificacion/`);
+      if (!res.ok) return;
+      setClases(extraerClases(await res.json()));
+    } catch {
+      /* sin clasificación */
+    }
+  };
+
   useEffect(() => {
     cargarProductos();
     cargarProveedores();
+    cargarClases();
   }, []);
 
   const categories = [...new Set(products.map((p) => p.categoria))];
@@ -133,7 +175,8 @@ export default function ProductosPage() {
     return (
       (p.nombre.toLowerCase().includes(s) || p.categoria.toLowerCase().includes(s)) &&
       (!catFilter || p.categoria === catFilter) &&
-      (!provFilter || p.proveedor === provFilter)
+      (!provFilter || p.proveedor === provFilter) &&
+      (!abcFilter || (abcFilter === "SIN" ? !clases[p.id] : clases[p.id] === abcFilter))
     );
   });
 
@@ -316,6 +359,20 @@ export default function ProductosPage() {
             <option value="">Proveedor</option>
             {proveedores.map((p) => <option key={p}>{p}</option>)}
           </select>
+          <div className="flex items-center gap-1 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] p-1" role="group" aria-label="Filtrar por clasificación ABC">
+            {([["", "Todos"], ["A", "A"], ["B", "B"], ["C", "C"], ["SIN", "Sin clase"]] as const).map(([v, t]) => (
+              <button
+                key={v}
+                onClick={() => { setAbcFilter(v); setPage(1); }}
+                aria-pressed={abcFilter === v}
+                title={v === "SIN" ? "Productos sin ventas en el período" : v ? ABC_TEXTO[v] : "Todas las clases"}
+                className={`px-2.5 py-1.5 rounded-md text-xs transition ${abcFilter === v ? "bg-[#7FF1D2] text-[#0F2B26]" : "text-[#3E5F57] hover:bg-[#E4F5F0]"}`}
+                style={{ fontWeight: 600 }}
+              >
+                {v && v !== "SIN" ? `ABC: ${t}` : t}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -329,6 +386,7 @@ export default function ProductosPage() {
               <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Proveedor</th>
               <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Stock</th>
               <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Precio</th>
+              <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>ABC</th>
               <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Estado</th>
               <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Acciones</th>
             </tr>
@@ -336,7 +394,7 @@ export default function ProductosPage() {
           <tbody className="divide-y divide-[#E4F5F0]">
             {!loading && pageItems.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
+                <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
                   {products.length === 0
                     ? 'Aún no hay productos registrados. Usa "Agregar producto" para comenzar.'
                     : "No hay productos que calcen con la búsqueda/filtros."}
@@ -350,6 +408,15 @@ export default function ProductosPage() {
                 <td className="px-4 py-3 text-[#3E5F57]">{p.proveedor || "—"}</td>
                 <td className="px-4 py-3 text-right">{stockBadge(p.stock)}</td>
                 <td className="px-4 py-3 text-right text-[#0F2B26]">${p.precio.toLocaleString("es-CL")}</td>
+                <td className="px-4 py-3">
+                  {clases[p.id] ? (
+                    <span className={`inline-flex w-7 h-7 items-center justify-center rounded-full text-xs ${ABC_ESTILO[clases[p.id]]}`} style={{ fontWeight: 700 }} title={ABC_TEXTO[clases[p.id]]}>
+                      {clases[p.id]}
+                    </span>
+                  ) : (
+                    <span className="text-[#5F7F77]" title="Sin ventas en el período">—</span>
+                  )}
+                </td>
                 <td className="px-4 py-3">{estadoBadge(p.estado)}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
@@ -425,6 +492,7 @@ export default function ProductosPage() {
                   ["Stock actual", selected.stock],
                   ["Precio compra", `$${selected.precioCompra.toLocaleString("es-CL")}`],
                   ["Precio venta", `$${selected.precio.toLocaleString("es-CL")}`],
+                  ["Clasificación ABC", clases[selected.id] ? `Clase ${clases[selected.id]}` : "Sin ventas en el período"],
                   ["Estado", selected.estado],
                   ["Fecha caducidad", selected.fechaCaducidad || "—"],
                   ["Ubicación", selected.ubicacion || "—"],

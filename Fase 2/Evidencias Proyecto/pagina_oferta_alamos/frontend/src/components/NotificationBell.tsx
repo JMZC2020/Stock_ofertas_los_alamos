@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "/api";
 const REFRESCO_MS = 60_000;
 
 interface Alerta {
