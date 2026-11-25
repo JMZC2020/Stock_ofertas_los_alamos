@@ -90,7 +90,9 @@ export default function UserMenu({ onLogout }: Props) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${API_BASE}/usuarios/me`);
+        const res = await fetch(`${API_BASE}/usuarios/me`, {
+          headers: { "X-Silent-Fetch": "1" },
+        });
         if (!res.ok) throw new Error();
         setPerfil(await res.json());
       } catch {
@@ -195,7 +197,7 @@ export default function UserMenu({ onLogout }: Props) {
         </button>
 
         {menu && (
-          <div className="absolute right-0 top-11 w-64 bg-white rounded-xl shadow-xl border border-[#D3EBE4] z-50 overflow-hidden">
+          <div className="absolute right-0 top-11 w-64 max-w-[calc(100vw-1.5rem)] bg-white rounded-xl shadow-xl border border-[#D3EBE4] z-50 overflow-hidden">
             <div className="flex items-center gap-3 px-4 py-4 border-b border-[#E4F5F0]">
               <Avatar perfil={perfil} tam="w-11 h-11 text-base" />
               <div className="min-w-0">

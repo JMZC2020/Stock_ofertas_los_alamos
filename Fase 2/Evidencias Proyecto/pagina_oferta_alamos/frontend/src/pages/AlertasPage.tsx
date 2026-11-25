@@ -110,10 +110,10 @@ export default function AlertasPage() {
   const medias = visibles.filter((a) => a.prioridad === "media");
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-4 sm:p-6 space-y-5">
       <div>
-        <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Centro de Alertas</h1>
-        <p className="text-sm text-[#5F7F77] mt-0.5">
+        <h1 className="text-lg sm:text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Centro de Alertas</h1>
+        <p className="text-xs sm:text-sm text-[#5F7F77] mt-0.5">
           {loading ? "Cargando..." : `${alertas.length} alertas activas requieren atención`}
         </p>
       </div>
@@ -125,7 +125,7 @@ export default function AlertasPage() {
       )}
 
       {/* Summary row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {[
           { label: "Stock crítico / bajo", count: stockCount, color: "text-white", bg: "bg-[#d32f2f] shadow-md", labelColor: "text-red-100", peligro: true },
           { label: "Por vencer", count: vencimientoCount, color: "text-[#e67e22]", bg: "bg-[#fdf3e3]", labelColor: "text-[#3E5F57]", peligro: false },

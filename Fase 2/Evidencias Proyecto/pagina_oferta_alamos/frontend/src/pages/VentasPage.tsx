@@ -261,28 +261,28 @@ export default function VentasPage() {
   };
 
   return (
-    <div className="p-6 space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 space-y-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Gestión de Ventas</h1>
-          <p className="text-sm text-[#5F7F77] mt-0.5">
+          <h1 className="text-lg sm:text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Gestión de Ventas</h1>
+          <p className="text-xs sm:text-sm text-[#5F7F77] mt-0.5">
             {loading ? "Cargando..." : "Registre y analice las ventas del sistema"}
           </p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setView("lista")} className={`px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "lista" ? "bg-[#7FF1D2] text-[#0F2B26] shadow" : "bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582]"}`} style={{ fontWeight: 600 }}>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => setView("lista")} className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "lista" ? "bg-[#7FF1D2] text-[#0F2B26] shadow" : "bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582]"}`} style={{ fontWeight: 600 }}>
             Historial
           </button>
-          <button onClick={() => setView("nueva")} className={`px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "nueva" ? "bg-[#7FF1D2] text-[#0F2B26] shadow" : "bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582]"}`} style={{ fontWeight: 600 }}>
+          <button onClick={() => setView("nueva")} className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-sm font-600 transition ${view === "nueva" ? "bg-[#7FF1D2] text-[#0F2B26] shadow" : "bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582]"}`} style={{ fontWeight: 600 }}>
             + Nueva venta
           </button>
-          <label className={`px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582] cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
+          <label className={`flex-1 sm:flex-initial text-center px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582] cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
             {importando ? "Importando..." : "Importar Excel"}
             <input type="file" accept=".xlsx,.xls" onChange={handleImportarExcel} disabled={importando} className="hidden" />
           </label>
           <button
             onClick={handleLimpiar}
-            className="px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#c0392b] border border-[#f5c6c2] hover:bg-[#fde8e6]"
+            className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-sm font-600 transition bg-white text-[#c0392b] border border-[#f5c6c2] hover:bg-[#fde8e6]"
             style={{ fontWeight: 600 }}
           >
             Limpiar ventas
@@ -297,7 +297,7 @@ export default function VentasPage() {
       )}
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {[
           { label: "Ventas hoy", value: `$${totalHoy.toLocaleString("es-CL")}`, sub: `${ventasHoy.length} transacciones` },
           { label: "Ventas semana", value: `$${totalSemana.toLocaleString("es-CL")}`, sub: `${ventasSemanaCount} transacciones` },
@@ -333,64 +333,110 @@ export default function VentasPage() {
             )}
           </div>
 
-          {/* Table */}
+          {/* Table (Tablet & Desktop) + Cards (Mobile) */}
           <div className="bg-white rounded-xl border border-[#D3EBE4] shadow-sm overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#E4F5F0]">
+            <div className="px-4 sm:px-5 py-3.5 border-b border-[#E4F5F0]">
               <h2 className="text-sm font-600 text-[#0F2B26]" style={{ fontWeight: 600 }}>Últimas transacciones</h2>
             </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#F1FAF7] border-b border-[#D3EBE4]">
-                  {["ID", "Fecha", "Producto", "Cant.", "Total", "Método", "Estado", "Acciones"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-600 text-[#5F7F77] uppercase tracking-wider" style={{ fontWeight: 600 }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E4F5F0]">
-                {!loading && ultimasVentas.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
-                      Aún no hay ventas registradas.
-                    </td>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[#F1FAF7] border-b border-[#D3EBE4]">
+                    {["ID", "Fecha", "Producto", "Cant.", "Total", "Método", "Estado", "Acciones"].map((h) => (
+                      <th key={h} className="px-4 py-3 text-left text-xs font-600 text-[#5F7F77] uppercase tracking-wider" style={{ fontWeight: 600 }}>{h}</th>
+                    ))}
                   </tr>
-                )}
-                {ultimasVentas.map((v) => (
-                  <tr key={v.id} className={`hover:bg-[#F1FAF7] transition-colors ${v.anulada ? "opacity-50" : ""}`}>
-                    <td className="px-4 py-3 font-mono text-xs text-[#0B6B55] font-600" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{v.id}</td>
-                    <td className="px-4 py-3 text-[#5F7F77] text-xs">{new Date(v.fecha).toLocaleString("es-CL")}</td>
-                    <td className="px-4 py-3 font-500 text-[#0F2B26]" style={{ fontWeight: 500 }}>{v.producto}</td>
-                    <td className="px-4 py-3 font-mono text-center text-[#3E5F57]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v.cantidad}</td>
-                    <td className="px-4 py-3 font-mono font-600 text-[#0F2B26]" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>${v.total.toLocaleString("es-CL")}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-600 ${v.metodo === "Efectivo" ? "bg-[#e8f8ef] text-[#1a7a4a]" : v.metodo === "Débito" ? "bg-[#EAF8F3] text-[#0B6B55]" : "bg-[#fdf3e3] text-[#e67e22]"}`} style={{ fontWeight: 600 }}>{v.metodo}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      {v.anulada ? (
-                        <span className="px-2 py-0.5 rounded-full text-xs font-600 bg-[#fde8e6] text-[#c0392b]" style={{ fontWeight: 600 }}>Anulada</span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded-full text-xs font-600 bg-[#e8f8ef] text-[#1a7a4a]" style={{ fontWeight: 600 }}>Vigente</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-3">
-                        {!v.anulada && (
-                          <button onClick={() => handleAnular(v)} className="text-xs font-600 text-[#e67e22] hover:underline" style={{ fontWeight: 600 }}>
-                            Anular
-                          </button>
+                </thead>
+                <tbody className="divide-y divide-[#E4F5F0]">
+                  {!loading && ultimasVentas.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
+                        Aún no hay ventas registradas.
+                      </td>
+                    </tr>
+                  )}
+                  {ultimasVentas.map((v) => (
+                    <tr key={v.id} className={`hover:bg-[#F1FAF7] transition-colors ${v.anulada ? "opacity-50" : ""}`}>
+                      <td className="px-4 py-3 font-mono text-xs text-[#0B6B55] font-600" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{v.id}</td>
+                      <td className="px-4 py-3 text-[#5F7F77] text-xs whitespace-nowrap">{new Date(v.fecha).toLocaleString("es-CL")}</td>
+                      <td className="px-4 py-3 font-500 text-[#0F2B26]" style={{ fontWeight: 500 }}>{v.producto}</td>
+                      <td className="px-4 py-3 font-mono text-center text-[#3E5F57]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{v.cantidad}</td>
+                      <td className="px-4 py-3 font-mono font-600 text-[#0F2B26] whitespace-nowrap" style={{ fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>${v.total.toLocaleString("es-CL")}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-600 ${v.metodo === "Efectivo" ? "bg-[#e8f8ef] text-[#1a7a4a]" : v.metodo === "Débito" ? "bg-[#EAF8F3] text-[#0B6B55]" : "bg-[#fdf3e3] text-[#e67e22]"}`} style={{ fontWeight: 600 }}>{v.metodo}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {v.anulada ? (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-600 bg-[#fde8e6] text-[#c0392b]" style={{ fontWeight: 600 }}>Anulada</span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-600 bg-[#e8f8ef] text-[#1a7a4a]" style={{ fontWeight: 600 }}>Vigente</span>
                         )}
-                        <button onClick={() => handleEliminar(v)} className="text-xs font-600 text-[#c0392b] hover:underline" style={{ fontWeight: 600 }}>
-                          Eliminar
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-3">
+                          {!v.anulada && (
+                            <button onClick={() => handleAnular(v)} className="text-xs font-600 text-[#e67e22] hover:underline" style={{ fontWeight: 600 }}>
+                              Anular
+                            </button>
+                          )}
+                          <button onClick={() => handleEliminar(v)} className="text-xs font-600 text-[#c0392b] hover:underline" style={{ fontWeight: 600 }}>
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Vista de tarjetas para móvil (< 768px) */}
+            <div className="md:hidden divide-y divide-[#E4F5F0]">
+              {!loading && ultimasVentas.length === 0 && (
+                <div className="px-4 py-8 text-center text-sm text-[#5F7F77]">
+                  Aún no hay ventas registradas.
+                </div>
+              )}
+              {ultimasVentas.map((v) => (
+                <div key={v.id} className={`p-4 space-y-2 hover:bg-[#F1FAF7] ${v.anulada ? "opacity-60" : ""}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-600 text-sm text-[#0F2B26] break-words" style={{ fontWeight: 600 }}>
+                        <span className="font-mono text-xs text-[#0B6B55] mr-1.5">#{v.id}</span>
+                        {v.producto}
+                      </p>
+                      <p className="text-xs text-[#5F7F77] mt-0.5">{new Date(v.fecha).toLocaleString("es-CL")}</p>
+                    </div>
+                    {v.anulada ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-600 bg-[#fde8e6] text-[#c0392b] shrink-0" style={{ fontWeight: 600 }}>Anulada</span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-600 bg-[#e8f8ef] text-[#1a7a4a] shrink-0" style={{ fontWeight: 600 }}>Vigente</span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-3 text-xs text-[#3E5F57]">
+                      <span>Cant: <b className="font-mono">{v.cantidad}</b></span>
+                      <span className="font-mono font-600 text-sm text-[#0F2B26]" style={{ fontWeight: 600 }}>${v.total.toLocaleString("es-CL")}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[11px] font-600 ${v.metodo === "Efectivo" ? "bg-[#e8f8ef] text-[#1a7a4a]" : v.metodo === "Débito" ? "bg-[#EAF8F3] text-[#0B6B55]" : "bg-[#fdf3e3] text-[#e67e22]"}`} style={{ fontWeight: 600 }}>{v.metodo}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {!v.anulada && (
+                        <button onClick={() => handleAnular(v)} className="text-xs font-600 text-[#e67e22] hover:underline" style={{ fontWeight: 600 }}>
+                          Anular
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      )}
+                      <button onClick={() => handleEliminar(v)} className="text-xs font-600 text-[#c0392b] hover:underline" style={{ fontWeight: 600 }}>
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       ) : (
-        <div className="bg-white rounded-xl border border-[#D3EBE4] shadow-sm p-6 max-w-lg">
+        <div className="bg-white rounded-xl border border-[#D3EBE4] shadow-sm p-4 sm:p-6 max-w-lg">
           <h2 className="font-700 text-[#0F2B26] mb-5" style={{ fontWeight: 700 }}>Registrar nueva venta</h2>
           <div className="space-y-4">
             <div>
@@ -413,7 +459,7 @@ export default function VentasPage() {
                 </p>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Cantidad</label>
                 <input type="number" value={cantidad} onChange={(e) => setCantidad(e.target.value)} min="1"

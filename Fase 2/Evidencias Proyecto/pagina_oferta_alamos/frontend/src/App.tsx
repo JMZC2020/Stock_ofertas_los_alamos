@@ -3,7 +3,8 @@ import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import DashboardLayout from "./pages/DashboardLayout";
 import AvisoInactividad from "./components/AvisoInactividad";
-import { SESSION_EXPIRED_EVENT, cerrarSesion, haySesionValida, instalarAuthFetch } from "./auth";
+import LoadingOverlay from "./components/LoadingOverlay";
+import { SESSION_EXPIRED_EVENT, cerrarSesion, haySesionValida, instalarAuthFetch, triggerLoading } from "./auth";
 
 type Screen = "login" | "reset-password" | "app";
 
@@ -44,6 +45,7 @@ export default function App() {
   }, []);
 
   const cerrar = () => {
+    triggerLoading("Cerrando sesión…", 280);
     cerrarSesion();
     setAvisoSesion(null);
     setScreen("login");
@@ -58,8 +60,9 @@ export default function App() {
   if (screen === "login") {
     return (
       <>
+        <LoadingOverlay />
         {avisoSesion && (
-          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 text-sm text-[#c0392b] bg-[#fde8e6] border border-[#f5c6c2] rounded-lg px-4 py-2.5 shadow">
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 text-sm text-[#c0392b] bg-[#fde8e6] border border-[#f5c6c2] rounded-lg px-4 py-2.5 shadow max-w-[90vw] text-center">
             {avisoSesion}
           </div>
         )}
@@ -68,18 +71,33 @@ export default function App() {
             setAvisoSesion(null);
             setScreen("app");
           }}
-          onForgotPassword={() => setScreen("reset-password")}
+          onForgotPassword={() => {
+            triggerLoading("Abriendo recuperación…", 240);
+            setScreen("reset-password");
+          }}
         />
       </>
     );
   }
 
   if (screen === "reset-password") {
-    return <ResetPasswordPage initialToken={resetToken} onBack={() => setScreen("login")} />;
+    return (
+      <>
+        <LoadingOverlay />
+        <ResetPasswordPage
+          initialToken={resetToken}
+          onBack={() => {
+            triggerLoading("Volviendo al inicio…", 240);
+            setScreen("login");
+          }}
+        />
+      </>
+    );
   }
 
   return (
     <>
+      <LoadingOverlay />
       <DashboardLayout onLogout={cerrar} />
       <AvisoInactividad activo minutosInactividad={MINUTOS_INACTIVIDAD} onExpirar={cerrarPorInactividad} />
     </>

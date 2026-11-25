@@ -291,22 +291,22 @@ export default function ProductosPage() {
   };
 
   return (
-    <div className="p-6 space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Listado de Productos</h1>
-          <p className="text-sm text-[#5F7F77] mt-0.5">
+          <h1 className="text-lg sm:text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Listado de Productos</h1>
+          <p className="text-xs sm:text-sm text-[#5F7F77] mt-0.5">
             {loading ? "Cargando..." : `${filtered.length} productos encontrados`}
           </p>
         </div>
-        <div className="flex gap-2">
-          <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582] text-sm font-600 transition cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+          <label className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white text-[#3E5F57] border border-[#D3EBE4] hover:border-[#12A582] text-sm font-600 transition cursor-pointer ${importando ? "opacity-50 pointer-events-none" : ""}`} style={{ fontWeight: 600 }}>
             {importando ? "Importando..." : "Importar Excel (POS)"}
             <input type="file" accept=".xlsx,.xls" onChange={handleImportarExcel} disabled={importando} className="hidden" />
           </label>
           <button
             onClick={openAdd}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm font-600 shadow transition"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm font-600 shadow transition"
             style={{ fontWeight: 600 }}
           >
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -324,9 +324,9 @@ export default function ProductosPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 border border-[#D3EBE4] shadow-sm">
-        <div className="flex flex-wrap gap-3">
-          <div className="relative flex-1 min-w-48">
+      <div className="bg-white rounded-xl p-3.5 sm:p-4 border border-[#D3EBE4] shadow-sm">
+        <div className="flex flex-wrap gap-2.5 sm:gap-3">
+          <div className="relative w-full sm:flex-1 sm:min-w-48">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5F7F77]" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" strokeLinecap="round" />
             </svg>
@@ -346,7 +346,7 @@ export default function ProductosPage() {
           <select
             value={catFilter}
             onChange={(e) => { setCatFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm text-[#3E5F57] focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
+            className="flex-1 sm:flex-initial min-w-[130px] px-3 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm text-[#3E5F57] focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
           >
             <option value="">Categoría</option>
             {categories.map((c) => <option key={c}>{c}</option>)}
@@ -354,19 +354,19 @@ export default function ProductosPage() {
           <select
             value={provFilter}
             onChange={(e) => { setProvFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm text-[#3E5F57] focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
+            className="flex-1 sm:flex-initial min-w-[130px] px-3 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm text-[#3E5F57] focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer"
           >
             <option value="">Proveedor</option>
             {proveedores.map((p) => <option key={p}>{p}</option>)}
           </select>
-          <div className="flex items-center gap-1 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] p-1" role="group" aria-label="Filtrar por clasificación ABC">
+          <div className="flex items-center gap-1 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] p-1 w-full sm:w-auto overflow-x-auto" role="group" aria-label="Filtrar por clasificación ABC">
             {([["", "Todos"], ["A", "A"], ["B", "B"], ["C", "C"], ["SIN", "Sin clase"]] as const).map(([v, t]) => (
               <button
                 key={v}
                 onClick={() => { setAbcFilter(v); setPage(1); }}
                 aria-pressed={abcFilter === v}
                 title={v === "SIN" ? "Productos sin ventas en el período" : v ? ABC_TEXTO[v] : "Todas las clases"}
-                className={`px-2.5 py-1.5 rounded-md text-xs transition ${abcFilter === v ? "bg-[#7FF1D2] text-[#0F2B26]" : "text-[#3E5F57] hover:bg-[#E4F5F0]"}`}
+                className={`flex-1 sm:flex-initial px-2.5 py-1.5 rounded-md text-xs whitespace-nowrap transition ${abcFilter === v ? "bg-[#7FF1D2] text-[#0F2B26]" : "text-[#3E5F57] hover:bg-[#E4F5F0]"}`}
                 style={{ fontWeight: 600 }}
               >
                 {v && v !== "SIN" ? `ABC: ${t}` : t}
@@ -376,72 +376,120 @@ export default function ProductosPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table (Tablet & Desktop) + Cards (Mobile) */}
       <div className="bg-white rounded-xl border border-[#D3EBE4] shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-[#F1FAF7] text-left text-xs text-[#5F7F77] uppercase tracking-wider">
-              <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Nombre</th>
-              <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Categoría</th>
-              <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Proveedor</th>
-              <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Stock</th>
-              <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Precio</th>
-              <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>ABC</th>
-              <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Estado</th>
-              <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#E4F5F0]">
-            {!loading && pageItems.length === 0 && (
-              <tr>
-                <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
-                  {products.length === 0
-                    ? 'Aún no hay productos registrados. Usa "Agregar producto" para comenzar.'
-                    : "No hay productos que calcen con la búsqueda/filtros."}
-                </td>
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-[#F1FAF7] text-left text-xs text-[#5F7F77] uppercase tracking-wider">
+                <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Nombre</th>
+                <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Categoría</th>
+                <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Proveedor</th>
+                <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Stock</th>
+                <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Precio</th>
+                <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>ABC</th>
+                <th className="px-4 py-3 font-600" style={{ fontWeight: 600 }}>Estado</th>
+                <th className="px-4 py-3 font-600 text-right" style={{ fontWeight: 600 }}>Acciones</th>
               </tr>
-            )}
-            {pageItems.map((p) => (
-              <tr key={p.id} className="hover:bg-[#F4FBF8]">
-                <td className="px-4 py-3 font-500 text-[#0F2B26]" style={{ fontWeight: 500 }}>{p.nombre}</td>
-                <td className="px-4 py-3 text-[#3E5F57]">{p.categoria}</td>
-                <td className="px-4 py-3 text-[#3E5F57]">{p.proveedor || "—"}</td>
-                <td className="px-4 py-3 text-right">{stockBadge(p.stock)}</td>
-                <td className="px-4 py-3 text-right text-[#0F2B26]">${p.precio.toLocaleString("es-CL")}</td>
-                <td className="px-4 py-3">
-                  {clases[p.id] ? (
-                    <span className={`inline-flex w-7 h-7 items-center justify-center rounded-full text-xs ${ABC_ESTILO[clases[p.id]]}`} style={{ fontWeight: 700 }} title={ABC_TEXTO[clases[p.id]]}>
+            </thead>
+            <tbody className="divide-y divide-[#E4F5F0]">
+              {!loading && pageItems.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-[#5F7F77]">
+                    {products.length === 0
+                      ? 'Aún no hay productos registrados. Usa "Agregar producto" para comenzar.'
+                      : "No hay productos que calcen con la búsqueda/filtros."}
+                  </td>
+                </tr>
+              )}
+              {pageItems.map((p) => (
+                <tr key={p.id} className="hover:bg-[#F4FBF8]">
+                  <td className="px-4 py-3 font-500 text-[#0F2B26]" style={{ fontWeight: 500 }}>{p.nombre}</td>
+                  <td className="px-4 py-3 text-[#3E5F57]">{p.categoria}</td>
+                  <td className="px-4 py-3 text-[#3E5F57]">{p.proveedor || "—"}</td>
+                  <td className="px-4 py-3 text-right">{stockBadge(p.stock)}</td>
+                  <td className="px-4 py-3 text-right text-[#0F2B26]">${p.precio.toLocaleString("es-CL")}</td>
+                  <td className="px-4 py-3">
+                    {clases[p.id] ? (
+                      <span className={`inline-flex w-7 h-7 items-center justify-center rounded-full text-xs ${ABC_ESTILO[clases[p.id]]}`} style={{ fontWeight: 700 }} title={ABC_TEXTO[clases[p.id]]}>
+                        {clases[p.id]}
+                      </span>
+                    ) : (
+                      <span className="text-[#5F7F77]" title="Sin ventas en el período">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">{estadoBadge(p.estado)}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => openView(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] hover:bg-[#E4F5F0] transition" title="Ver detalle">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><circle cx="12" cy="12" r="3" /></svg>
+                      </button>
+                      <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] hover:bg-[#E4F5F0] transition" title="Editar">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                      </button>
+                      <button onClick={() => handleDelete(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#c0392b] hover:bg-[#fde8e6] transition" title="Eliminar">
+                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" /></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Vista de tarjetas para móvil (< 768px) */}
+        <div className="md:hidden divide-y divide-[#E4F5F0]">
+          {!loading && pageItems.length === 0 && (
+            <div className="px-4 py-8 text-center text-sm text-[#5F7F77]">
+              {products.length === 0
+                ? 'Aún no hay productos registrados. Usa "Agregar producto" para comenzar.'
+                : "No hay productos que calcen con la búsqueda/filtros."}
+            </div>
+          )}
+          {pageItems.map((p) => (
+            <div key={p.id} className="p-4 space-y-2.5 hover:bg-[#F4FBF8]">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-600 text-sm text-[#0F2B26] break-words" style={{ fontWeight: 600 }}>{p.nombre}</p>
+                  <p className="text-xs text-[#5F7F77] mt-0.5">{p.categoria} · {p.proveedor || "Sin proveedor"}</p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {clases[p.id] && (
+                    <span className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-[11px] ${ABC_ESTILO[clases[p.id]]}`} style={{ fontWeight: 700 }}>
                       {clases[p.id]}
                     </span>
-                  ) : (
-                    <span className="text-[#5F7F77]" title="Sin ventas en el período">—</span>
                   )}
-                </td>
-                <td className="px-4 py-3">{estadoBadge(p.estado)}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1">
-                    <button onClick={() => openView(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] hover:bg-[#E4F5F0] transition" title="Ver detalle">
-                      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><circle cx="12" cy="12" r="3" /></svg>
-                    </button>
-                    <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] hover:bg-[#E4F5F0] transition" title="Editar">
-                      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                    </button>
-                    <button onClick={() => handleDelete(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#c0392b] hover:bg-[#fde8e6] transition" title="Eliminar">
-                      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" /></svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  {estadoBadge(p.estado)}
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-4 text-xs text-[#3E5F57]">
+                  <span>Stock: {stockBadge(p.stock)}</span>
+                  <span>Precio: <b className="text-[#0F2B26]">${p.precio.toLocaleString("es-CL")}</b></span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => openView(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] bg-[#F1FAF7]" title="Ver detalle">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><circle cx="12" cy="12" r="3" /></svg>
+                  </button>
+                  <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#5F7F77] hover:text-[#0B6B55] bg-[#F1FAF7]" title="Editar">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                  </button>
+                  <button onClick={() => handleDelete(p)} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#c0392b] bg-[#fde8e6]" title="Eliminar">
+                    <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" /></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[#E4F5F0]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-[#E4F5F0]">
           <span className="text-xs text-[#5F7F77]">
             Mostrando {filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} de {filtered.length}
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center justify-center gap-1">
             <button
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
@@ -509,7 +557,7 @@ export default function ProductosPage() {
                 </div>
               </div>
             ) : (
-              <div className="px-6 py-5 space-y-4">
+              <div className="px-4 sm:px-6 py-5 space-y-4">
                 <div>
                   <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Nombre</label>
                   <input
@@ -519,7 +567,7 @@ export default function ProductosPage() {
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Precio de compra</label>
                     <input type="number" value={form.precioCompra ?? ""} onChange={(e) => setForm({ ...form, precioCompra: +e.target.value })}
@@ -531,7 +579,7 @@ export default function ProductosPage() {
                       className="w-full px-3.5 py-2.5 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582]" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Stock inicial</label>
                     <input type="number" value={form.stock ?? ""} onChange={(e) => setForm({ ...form, stock: +e.target.value })}
@@ -547,7 +595,7 @@ export default function ProductosPage() {
                     </datalist>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Proveedor</label>
                     <select

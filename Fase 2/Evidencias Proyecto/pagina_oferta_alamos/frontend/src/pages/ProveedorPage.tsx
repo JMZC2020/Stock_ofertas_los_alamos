@@ -135,15 +135,15 @@ export default function ProveedorPage() {
   };
 
   return (
-    <div className="p-6 space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Proveedores</h1>
-          <p className="text-sm text-[#5F7F77] mt-0.5">
+          <h1 className="text-lg sm:text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Proveedores</h1>
+          <p className="text-xs sm:text-sm text-[#5F7F77] mt-0.5">
             {loading ? "Cargando..." : `${filtered.length} proveedores registrados`}
           </p>
         </div>
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm font-600 shadow transition" style={{ fontWeight: 600 }}>
+        <button onClick={openAdd} className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#7FF1D2] hover:bg-[#5EE3BE] text-[#0F2B26] text-sm font-600 shadow transition w-full sm:w-auto" style={{ fontWeight: 600 }}>
           <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" strokeLinecap="round" /></svg>
           Nuevo proveedor
         </button>
@@ -155,7 +155,7 @@ export default function ProveedorPage() {
         </div>
       )}
 
-      <div className="relative max-w-sm">
+      <div className="relative w-full sm:max-w-sm">
         <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5F7F77]" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" strokeLinecap="round" />
         </svg>

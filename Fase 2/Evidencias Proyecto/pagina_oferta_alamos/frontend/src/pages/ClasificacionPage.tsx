@@ -121,28 +121,28 @@ export default function ClasificacionPage() {
   const sinDatos = !loading && datos !== null && datos.total_ingresos === 0;
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-4 sm:p-6 space-y-5">
       <div>
-        <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Clasificación ABC</h1>
-        <p className="text-sm text-[#5F7F77] mt-0.5">
+        <h1 className="text-lg sm:text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Clasificación ABC</h1>
+        <p className="text-xs sm:text-sm text-[#5F7F77] mt-0.5">
           Descubre qué productos sostienen tu negocio y cuáles venden poco.
         </p>
       </div>
 
       {/* Parámetros */}
-      <div className="bg-white rounded-xl p-5 border border-[#D3EBE4] shadow-sm">
-        <div className="flex flex-wrap items-end gap-4">
-          <div>
+      <div className="bg-white rounded-xl p-4 sm:p-5 border border-[#D3EBE4] shadow-sm">
+        <div className="flex flex-wrap items-end gap-3 sm:gap-4">
+          <div className="w-full sm:w-auto">
             <label className="block text-xs text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>¿Qué tan exigente quieres ser?</label>
             <select value={nivel} onChange={(e) => cambiarNivel(e.target.value as NivelId)} disabled={loading}
-              className="px-3 py-2 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer">
+              className="w-full sm:w-auto px-3 py-2 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer">
               {NIVELES.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}
             </select>
           </div>
-          <div>
+          <div className="w-full sm:w-auto">
             <label className="block text-xs text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>Ventas de qué período</label>
             <select value={dias} onChange={(e) => cambiarPeriodo(Number(e.target.value))} disabled={loading}
-              className="px-3 py-2 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer">
+              className="w-full sm:w-auto px-3 py-2 rounded-lg border border-[#D3EBE4] bg-[#F1FAF7] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] cursor-pointer">
               {PERIODOS.map((p) => <option key={p.dias} value={p.dias}>{p.label}</option>)}
             </select>
           </div>
@@ -217,14 +217,14 @@ export default function ClasificacionPage() {
 
           {/* Comparación visual: pocos productos, muchas ventas */}
           {!sinDatos && (
-            <div className="bg-white rounded-xl p-5 border border-[#D3EBE4] shadow-sm space-y-4">
+            <div className="bg-white rounded-xl p-4 sm:p-5 border border-[#D3EBE4] shadow-sm space-y-4">
               {[
                 { titulo: "Productos", valor: (r: ResumenClase) => r.porcentaje_productos, cantidad: (r: ResumenClase) => `${r.productos}` },
                 { titulo: "Ventas", valor: (r: ResumenClase) => r.porcentaje_ingresos, cantidad: (r: ResumenClase) => pesos(r.ingresos) },
               ].map((fila) => (
-                <div key={fila.titulo} className="flex items-center gap-4">
+                <div key={fila.titulo} className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4">
                   <span className="w-20 shrink-0 text-sm text-[#0F2B26]" style={{ fontWeight: 600 }}>{fila.titulo}</span>
-                  <div className="flex-1 flex h-11 gap-0.5 rounded-lg overflow-hidden">
+                  <div className="w-full flex-1 flex h-10 sm:h-11 gap-0.5 rounded-lg overflow-hidden">
                     {datos.resumen.map((r) => {
                       const pct = fila.valor(r);
                       if (pct <= 0) return null;

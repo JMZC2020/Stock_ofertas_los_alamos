@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PasswordInput from "../components/PasswordInput";
 
 const API_BASE = "/api";
 
@@ -47,10 +48,10 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#EAF8F3]">
-      <div className="w-full max-w-md px-6">
+    <div className="min-h-screen flex items-center justify-center bg-[#EAF8F3] py-8">
+      <div className="w-full max-w-md px-4 sm:px-6">
         {/* Brand */}
-        <div className="flex items-center justify-center mb-10">
+        <div className="flex items-center justify-center mb-8 sm:mb-10">
           <div className="text-center">
             <h1 className="text-2xl font-800 text-[#0F2B26] leading-tight" style={{ fontWeight: 800 }}>
               Oferta de los
@@ -62,7 +63,7 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-[#D3EBE4] p-8">
+        <div className="bg-white rounded-2xl shadow-lg border border-[#D3EBE4] p-6 sm:p-8">
           <p className="text-sm font-600 text-[#3E5F57] uppercase tracking-widest mb-6 text-center" style={{ fontWeight: 600 }}>
             Iniciar sesión
           </p>
@@ -101,21 +102,13 @@ export default function LoginPage({ onLogin, onForgotPassword }: Props) {
             <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
               Contraseña
             </label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5F7F77]">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <rect x="5" y="11" width="14" height="10" rx="2" />
-                  <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-                </svg>
-              </span>
-              <input
-                type="password"
-                value={pass}
-                onChange={(e) => setPass(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
-              />
-            </div>
+            <PasswordInput
+              value={pass}
+              onChange={setPass}
+              onKeyDown={handleKeyDown}
+              autoComplete="current-password"
+              hasLeftIcon
+            />
           </div>
 
           {/* Login Button */}

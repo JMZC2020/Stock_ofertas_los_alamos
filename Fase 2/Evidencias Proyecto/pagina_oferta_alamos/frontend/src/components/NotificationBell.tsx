@@ -32,7 +32,9 @@ export default function NotificationBell({ refreshKey, onVerTodas }: Props) {
 
   const cargar = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/alertas/`);
+      const res = await fetch(`${API_BASE}/alertas/`, {
+        headers: { "X-Silent-Fetch": "1" },
+      });
       if (!res.ok) throw new Error();
       setAlertas(await res.json());
       setFallo(false);
@@ -90,7 +92,7 @@ export default function NotificationBell({ refreshKey, onVerTodas }: Props) {
       </button>
 
       {abierto && (
-        <div className="absolute right-0 top-10 w-80 bg-white rounded-xl shadow-xl border border-[#D3EBE4] z-50 overflow-hidden">
+        <div className="absolute -right-14 sm:right-0 top-10 w-[calc(100vw-1.5rem)] max-w-80 bg-white rounded-xl shadow-xl border border-[#D3EBE4] z-50 overflow-hidden">
           <div className="px-4 py-3 border-b border-[#E4F5F0] flex items-center justify-between">
             <span className="text-sm text-[#0F2B26]" style={{ fontWeight: 600 }}>Notificaciones</span>
             {total > 0 && <span className="text-xs text-[#5F7F77]">{total} pendiente{total === 1 ? "" : "s"}</span>}

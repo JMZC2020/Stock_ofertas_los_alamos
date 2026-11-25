@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PasswordInput from "../components/PasswordInput";
 
 const API_BASE = "/api";
 
@@ -83,10 +84,10 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#EAF8F3]">
-      <div className="w-full max-w-md px-6">
+    <div className="min-h-screen flex items-center justify-center bg-[#EAF8F3] py-8">
+      <div className="w-full max-w-md px-4 sm:px-6">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-3 mb-6 sm:mb-8">
           <button
             onClick={onBack}
             className="w-9 h-9 rounded-lg flex items-center justify-center border border-[#D3EBE4] bg-white text-[#3E5F57] hover:text-[#0B6B55] hover:border-[#12A582] transition"
@@ -98,7 +99,7 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
           <span className="font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Restablecer Contraseña</span>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-[#D3EBE4] p-8">
+        <div className="bg-white rounded-2xl shadow-lg border border-[#D3EBE4] p-6 sm:p-8">
           {/* Step indicator */}
           <div className="flex items-center gap-2 mb-6">
             <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-700 ${step === 1 ? "bg-[#7FF1D2] text-[#0F2B26]" : "bg-[#27ae60] text-[#0F2B26]"}`} style={{ fontWeight: 700 }}>
@@ -180,12 +181,11 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
                 <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
                   Nueva contraseña
                 </label>
-                <input
-                  type="password"
-                  placeholder="••••••••••••••"
+                <PasswordInput
                   value={newPass}
-                  onChange={(e) => setNewPass(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
+                  onChange={setNewPass}
+                  placeholder="••••••••••••••"
+                  autoComplete="new-password"
                 />
               </div>
 
@@ -193,12 +193,11 @@ export default function ResetPasswordPage({ onBack, initialToken = null }: Props
                 <label className="block text-sm font-500 text-[#3E5F57] mb-1.5" style={{ fontWeight: 500 }}>
                   Confirmar contraseña
                 </label>
-                <input
-                  type="password"
-                  placeholder="••••••••••••••"
+                <PasswordInput
                   value={confirmPass}
-                  onChange={(e) => setConfirmPass(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[#D3EBE4] bg-[#F1FAF7] text-[#0F2B26] text-sm focus:outline-none focus:ring-2 focus:ring-[#12A582]/30 focus:border-[#12A582] transition"
+                  onChange={setConfirmPass}
+                  placeholder="••••••••••••••"
+                  autoComplete="new-password"
                 />
               </div>
 

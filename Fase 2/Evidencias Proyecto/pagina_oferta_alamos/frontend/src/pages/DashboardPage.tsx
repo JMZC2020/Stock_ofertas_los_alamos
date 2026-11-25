@@ -89,6 +89,15 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actualizado, setActualizado] = useState<Date | null>(null);
+  const [esMovil, setEsMovil] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 640 : false
+  );
+
+  useEffect(() => {
+    const alRedimensionar = () => setEsMovil(window.innerWidth < 640);
+    window.addEventListener("resize", alRedimensionar);
+    return () => window.removeEventListener("resize", alRedimensionar);
+  }, []);
 
   const cargar = async () => {
     setLoading(true);
@@ -112,12 +121,12 @@ export default function DashboardPage() {
   const variacion = data?.variacion_7d ?? null;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-5 sm:space-y-6">
       {/* Título */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Dashboard Principal</h1>
-          <p className="text-sm text-[#5F7F77] mt-0.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-xl font-700 text-[#0F2B26]" style={{ fontWeight: 700 }}>Dashboard Principal</h1>
+          <p className="text-xs sm:text-sm text-[#5F7F77] mt-0.5">
             Resumen del sistema
             {actualizado && ` · actualizado ${actualizado.toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" })}`}
           </p>
@@ -125,7 +134,7 @@ export default function DashboardPage() {
         <button
           onClick={cargar}
           disabled={loading}
-          className="px-3 py-1.5 text-xs rounded-lg border border-[#D3EBE4] text-[#3E5F57] bg-white hover:bg-[#F4FBF8] disabled:opacity-50"
+          className="px-3 py-1.5 text-xs rounded-lg border border-[#D3EBE4] text-[#3E5F57] bg-white hover:bg-[#F4FBF8] disabled:opacity-50 shrink-0"
         >
           {loading ? "Actualizando…" : "Actualizar"}
         </button>
@@ -136,14 +145,14 @@ export default function DashboardPage() {
       )}
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {!data && (
-          <div className="col-span-2 lg:col-span-4 bg-white rounded-xl p-5 shadow-sm border border-[#D3EBE4]">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-4 bg-white rounded-xl p-5 shadow-sm border border-[#D3EBE4]">
             <EmptyState text={loading ? "Cargando datos…" : "No se pudieron cargar los datos del dashboard."} />
           </div>
         )}
         {kpiCards.map((k) => (
-          <div key={k.label} className={`rounded-xl p-5 shadow-sm border border-[#D3EBE4] ${k.color}`}>
+          <div key={k.label} className={`rounded-xl p-4 sm:p-5 shadow-sm border border-[#D3EBE4] ${k.color}`}>
             <p
               className={`text-xs font-500 uppercase tracking-wider mb-2 ${k.alert ? "text-red-200" : k.warn ? "text-orange-200" : k.color === "bg-white" ? "text-[#5F7F77]" : "text-[#1F5C4E]"}`}
               style={{ fontWeight: 500 }}
@@ -151,7 +160,7 @@ export default function DashboardPage() {
               {k.label}
             </p>
             <p
-              className={`text-3xl font-800 font-mono leading-none mb-1 ${k.textColor}`}
+              className={`text-2xl sm:text-3xl font-800 font-mono leading-none mb-1 break-words ${k.textColor}`}
               style={{ fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}
             >
               {k.value}
@@ -165,8 +174,8 @@ export default function DashboardPage() {
         <>
           {/* Tendencia + métodos de pago */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2 bg-white rounded-xl p-5 shadow-sm border border-[#D3EBE4]">
-              <div className="flex items-center justify-between mb-4">
+            <div className="lg:col-span-2 bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-[#D3EBE4]">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>
                   <h2 className="text-sm font-600 text-[#0F2B26]" style={{ fontWeight: 600 }}>Tendencia de ventas diarias</h2>
                   <p className="text-xs text-[#5F7F77]">Últimos 30 días</p>
@@ -248,8 +257,11 @@ export default function DashboardPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#E4F5F0" horizontal={false} />
                   <XAxis type="number" tick={{ fontSize: 11, fill: "#5F7F77" }} axisLine={false} tickLine={false} allowDecimals={false} />
                   <YAxis
-                    type="category" dataKey="producto" width={230}
-                    tickFormatter={(s: string) => (s.length > 34 ? s.slice(0, 33) + "…" : s)}
+                    type="category" dataKey="producto" width={esMovil ? 115 : 230}
+                    tickFormatter={(s: string) => {
+                      const max = esMovil ? 16 : 34;
+                      return s.length > max ? s.slice(0, max - 1) + "…" : s;
+                    }}
                     tick={{ fontSize: 11, fill: "#3E5F57" }} axisLine={false} tickLine={false}
                   />
                   <Tooltip
